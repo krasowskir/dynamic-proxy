@@ -3,10 +3,15 @@ package org.richard.home;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.FixedValue;
 import net.sf.cglib.proxy.MethodInterceptor;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.richard.home.proxy.AnotherService;
 import org.richard.home.proxy.MeinInterface;
 import org.richard.home.proxy.MeinInterfaceImpl;
 import org.richard.home.proxy.MyInvocationHandler;
+import org.richard.home.web.PlayerServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +35,12 @@ public class App {
         App app = new App();
 //        app.callCglibProxy();
         app.callServiceWithoutInterface();
+        try {
+            log.info("server started...");
+            app.startServer();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void callCglibProxy(){
@@ -54,6 +65,18 @@ public class App {
         AnotherService service = (AnotherService)enhancer.create();
         String result = service.zeigeAn(false);
         log.info("result was: '{}'", result);
+    }
+
+    public void startServer() throws Exception {
+        Server server = new Server();
+        Connector connector = new ServerConnector(server);
+        server.addConnector(connector);
+
+        ServletContextHandler servletContextHandler = new ServletContextHandler();
+        servletContextHandler.setContextPath("/api");
+        servletContextHandler.addServlet(PlayerServlet.class, "/player/*");
+        server.setHandler(servletContextHandler);
+        server.start();
     }
 
 }
