@@ -1,20 +1,15 @@
 package org.richard.home;
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRegistration;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.ServletsConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.richard.home.config.GeneralConfiguration;
-import org.richard.home.infrastructure.PlayerService;
+import org.richard.home.web.PlayerServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.WebApplicationInitializer;
+import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.servlet.DispatcherServlet;
 
 public class App {
     private static Logger log = LoggerFactory.getLogger(App.class);
@@ -34,16 +29,19 @@ public class App {
         connector.setPort(8080);
         server.addConnector(connector);
 
+        // Servlet web application context
         WebAppContext context = new WebAppContext();
         context.addConfiguration(new ServletsConfiguration());
 
-//        AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
-//        appContext.register(GeneralConfiguration.class);
-//        appContext.setServletContext(context.getServletContext());
-//        appContext.refresh();
-//        appContext.start();
+        // Spring web application context
+        AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
+        appContext.register(GeneralConfiguration.class);
+        appContext.setServletContext(context.getServletContext());
+        appContext.refresh();
 
-//        context.configure();
+        // initialize start Spring context
+        context.addEventListener(new ContextLoaderListener(appContext));
+        context.addServlet(PlayerServlet.class, "/player/*");
         context.setWar("target/dynamic-proxy-1.0.war");
         context.setContextPath("/api");
 
