@@ -7,7 +7,6 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.richard.home.infrastructure.PlayerService;
 import org.richard.home.infrastructure.VerifyAge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +63,7 @@ public class PlayerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         log.info("real path of file in servlet context: {}", req.getServletContext().getRealPath("rich-file"));
-        this.playerService = RequestContextUtils.findWebApplicationContext(req).getBean(PlayerService.class);
+        this.playerService = RequestContextUtils.findWebApplicationContext(req).getBean(VerifyAge.class);
         playerService.verifyAge(Integer.parseInt(req.getParameter("age1")), Integer.parseInt(req.getParameter("age2")));
         resp.getWriter().write("PlayerServlet works!");
     }
