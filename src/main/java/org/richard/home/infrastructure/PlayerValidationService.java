@@ -4,10 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class PlayerService implements VerifyAge {
-    private static Logger log = LoggerFactory.getLogger(PlayerService.class);
+public class PlayerValidationService implements VerifyAge {
+    private static Logger log = LoggerFactory.getLogger(PlayerValidationService.class);
 
-    public PlayerService() {
+    public PlayerValidationService() {
     }
 
     @Override

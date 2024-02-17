@@ -4,6 +4,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.ServletsConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.richard.home.config.ApplicationConfiguration;
 import org.richard.home.config.GeneralConfiguration;
 import org.richard.home.web.PlayerServlet;
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ public class App {
         // Spring web application context
         AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
         appContext.register(GeneralConfiguration.class);
+        appContext.register(ApplicationConfiguration.class);
         appContext.setServletContext(context.getServletContext());
         appContext.refresh();
 
