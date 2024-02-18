@@ -105,7 +105,6 @@ public class GeneralConfiguration {
     @Bean
     public EntityManagerFactory entityManagerFactory() {
         Properties jpaProps = new Properties();
-        jpaProps.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         jpaProps.put("hibernate.format_sql", "true");
         jpaProps.put("hibernate.hbm2ddl.auto", "none");
         jpaProps.put("hibernate.show_sql", "true");

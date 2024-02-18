@@ -52,7 +52,7 @@ public class PlayerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         log.info("real path of file in servlet context: {}", req.getServletContext().getRealPath("rich-file"));
-        var player = this.playerService.findPlayer(req.getParameter("id"));
+        var player = this.playerService.findPlayer(req.getParameter("name"));
         resp.getWriter().write(String.format("Player found: %s", player.toString()));
     }
 }

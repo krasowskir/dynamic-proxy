@@ -1,16 +1,22 @@
 package org.richard.home;
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.ServletsConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.richard.home.config.ApplicationConfiguration;
 import org.richard.home.config.GeneralConfiguration;
+import org.richard.home.web.ArgumentsValidatingFilter;
 import org.richard.home.web.PlayerServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 public class App {
     private static Logger log = LoggerFactory.getLogger(App.class);
@@ -42,8 +48,10 @@ public class App {
         appContext.refresh();
 
         // initialize start Spring context
+        context.addConfiguration();
         context.addEventListener(new ContextLoaderListener(appContext));
         context.addServlet(PlayerServlet.class, "/player/*");
+        context.addFilter(ArgumentsValidatingFilter.class, "/player/*", EnumSet.of(DispatcherType.REQUEST));
         context.setWar("target/dynamic-proxy-1.0.war");
         context.setContextPath("/api");
 
