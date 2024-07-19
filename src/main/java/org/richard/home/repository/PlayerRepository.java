@@ -11,11 +11,11 @@ public interface PlayerRepository {
 
     Player getPlayer(EntityManager entityManager, String name);
 
-    List<Player> getPlayerByAlter(int alter);
+    List<Player> getPlayerByAlter(EntityManager entityManager,int alter);
 
-    Map<Player, Address> getAllPlayers();
+    Map<Player, Address> getAllPlayers(EntityManager entityManager);
 
-    List<Player> getPlayersFromTeam(int teamId);
+    List<Player> getPlayersFromTeam(EntityManager entityManager, int teamId);
 
     int savePlayer(Player toSave);
 

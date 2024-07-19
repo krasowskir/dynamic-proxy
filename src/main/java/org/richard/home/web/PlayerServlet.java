@@ -18,7 +18,7 @@ public class PlayerServlet extends HttpServlet {
 
     private PlayerService playerService;
 
-    private static Logger log = LoggerFactory.getLogger(PlayerServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(PlayerServlet.class);
 
     public PlayerServlet() {
     }
@@ -52,7 +52,21 @@ public class PlayerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         log.info("real path of file in servlet context: {}", req.getServletContext().getRealPath("rich-file"));
-        var player = this.playerService.findPlayer(req.getParameter("name"));
-        resp.getWriter().write(String.format("Player found: %s", player.toString()));
+        switch (req.getParameterNames().nextElement()){
+            case "age" -> {
+                var players = this.playerService.findPlayerByAge(Integer.parseInt(req.getParameter("age")));
+                players.forEach(player -> {
+                    try {
+                        resp.getWriter().write(String.format("Player found: %s \n", player.toString()));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+            case "name" -> {
+                var player = this.playerService.findPlayer(req.getParameter("name"));
+                resp.getWriter().write(String.format("Player found: %s", player.toString()));
+            }
+        }
     }
 }

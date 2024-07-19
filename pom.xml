@@ -15,6 +15,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
+    <hibernate.version>6.4.4.Final</hibernate.version>
   </properties>
 
   <dependencies>
@@ -110,14 +111,19 @@
       <version>3.1.0</version>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
-      <version>6.4.4.Final</version>
+      <version>${hibernate.version}</version>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.hibernate</groupId>-->
+<!--      <artifactId>hibernate-annotations</artifactId>-->
+<!--      <version>3.5.6-Final</version>-->
+<!--    </dependency>-->
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
-      <version>3.5.6-Final</version>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-jpamodelgen</artifactId>
+      <version>${hibernate.version}</version>
     </dependency>
 
 <!--    jackson object mapper-->
@@ -151,7 +157,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.10.1</version>
+          <version>3.11.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
@@ -167,10 +173,17 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.10.1</version>
+        <version>3.11.0</version>
         <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.hibernate.orm</groupId>
+              <artifactId>hibernate-jpamodelgen</artifactId>
+              <version>${hibernate.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
       <plugin>
@@ -182,6 +195,53 @@
           <webappDirectory>${project.basedir}/src/main/webapp</webappDirectory>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>11.0.21</version>
+        <executions>
+          <execution>
+            <id>Hochfahren der Container für integrationstests mit jetty und restAssured</id>
+            <goals>
+              <goal>start-war</goal>
+            </goals>
+            <phase>pre-integration-test</phase>
+            <configuration>
+              <deployMode>EMBED</deployMode>
+              <stopKey>jettyStop</stopKey>
+            </configuration>
+          </execution>
+          <execution>
+            <id>Herunterfahren der Container</id>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+            <phase>post-integration-test</phase>
+            <configuration>
+              <stopPort>8081</stopPort>
+              <stopKey>jettyStop</stopKey>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!--      <plugin>-->
+      <!--        <groupId>org.hibernate.orm.tooling</groupId>-->
+      <!--        <artifactId>hibernate-enhance-maven-plugin</artifactId>-->
+      <!--        <version>${hibernate.version}</version>-->
+      <!--        <executions>-->
+      <!--          <execution>-->
+      <!--            <configuration>-->
+      <!--              <failOnError>true</failOnError>-->
+      <!--              <enableLazyInitialization>true</enableLazyInitialization>-->
+      <!--              <enableDirtyTracking>true</enableDirtyTracking>-->
+      <!--              <enableAssociationManagement>true</enableAssociationManagement>-->
+      <!--            </configuration>-->
+      <!--            <goals>-->
+      <!--              <goal>enhance</goal>-->
+      <!--            </goals>-->
+      <!--          </execution>-->
+      <!--        </executions>-->
+      <!--      </plugin>-->
     </plugins>
   </build>
 </project>

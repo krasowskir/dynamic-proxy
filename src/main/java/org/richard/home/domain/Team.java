@@ -3,20 +3,20 @@ package org.richard.home.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.persistence.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 import java.util.Arrays;
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
+@Table(name = "teams")
 public class Team {
 
     @Id
+    @GeneratedValue
     private int id;
+
     private String name;
     private int budget;
     private String logo;
@@ -128,13 +128,13 @@ public class Team {
         this.website = website;
     }
 
-    public JsonNode getSquad() {
-        return squad;
-    }
+//    public JsonNode getSquad() {
+//        return squad;
+//    }
 
-    public void setSquad(JsonNode squad) {
-        this.squad = squad;
-    }
+//    public void setSquad(JsonNode squad) {
+//        this.squad = squad;
+//    }
 
     public int getWyId() {
         return wyId;
@@ -164,10 +164,11 @@ public class Team {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Team)) return false;
-        Team team = (Team) o;
+        if (!(o instanceof Team team)) return false;
         return id == team.id;
     }
+
+
 
     @Override
     public int hashCode() {

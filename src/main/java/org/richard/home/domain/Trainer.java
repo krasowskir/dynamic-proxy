@@ -1,7 +1,9 @@
 package org.richard.home.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 import java.util.Objects;
 
 @Entity
@@ -54,8 +56,7 @@ public class Trainer {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Trainer)) return false;
-        Trainer trainer = (Trainer) o;
+        if (!(o instanceof Trainer trainer)) return false;
         return Objects.equals(wyid, trainer.wyid);
     }
 

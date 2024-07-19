@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 
 public class MyInvocationHandler implements InvocationHandler {
 
-private static Logger log = LoggerFactory.getLogger(MyInvocationHandler.class);
+private static final Logger log = LoggerFactory.getLogger(MyInvocationHandler.class);
 
     public MyInvocationHandler() {
         log.info("MyInvocationHandler erzeugt!");

@@ -27,7 +27,7 @@ public enum Country {
     JAMAICA("JAMAICA"), URUGUAY("URUGUAY"), PARAGUAY("PARAGUAY");
 
     @Transient
-    private String name;
+    private final String name;
 
     Country(String name) {
         this.name = name;

@@ -21,8 +21,8 @@ import java.util.Properties;
 class ConnectionTest {
 
     private static final String HOST, USERNAME, PASSWORD, PORT, DATABASE_NAME;
-    private static Logger log = LoggerFactory.getLogger(ConnectionTest.class);
-    private static Properties PROPS;
+    private static final Logger log = LoggerFactory.getLogger(ConnectionTest.class);
+    private static final Properties PROPS;
 
     static {
         PROPS = new Properties();

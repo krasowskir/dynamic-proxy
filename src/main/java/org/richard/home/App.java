@@ -1,7 +1,6 @@
 package org.richard.home;
 
 import jakarta.servlet.DispatcherType;
-import jakarta.servlet.Filter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.ServletsConfiguration;
@@ -16,10 +15,9 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import java.util.EnumSet;
-import java.util.Set;
 
 public class App {
-    private static Logger log = LoggerFactory.getLogger(App.class);
+    private static final Logger log = LoggerFactory.getLogger(App.class);
     public static void main(String[] args) {
         App app = new App();
         try {
@@ -57,6 +55,7 @@ public class App {
 
         server.setHandler(context);
         server.start();
+
     }
 
 }

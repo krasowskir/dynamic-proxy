@@ -1,9 +1,9 @@
 package org.richard.home.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -51,8 +51,7 @@ public class League {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof League)) return false;
-        League league = (League) o;
+        if (!(o instanceof League league)) return false;
         return id == league.id;
     }
 

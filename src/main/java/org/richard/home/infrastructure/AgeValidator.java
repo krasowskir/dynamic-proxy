@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 @SupportedValidationTarget({ValidationTarget.PARAMETERS})
 public class AgeValidator implements ConstraintValidator<AgeMustBeAtLeastEighteen, Object[]> {
-    private static Logger log = LoggerFactory.getLogger(AgeValidator.class);
+    private static final Logger log = LoggerFactory.getLogger(AgeValidator.class);
 
     @Override
     public boolean isValid(Object[] value, ConstraintValidatorContext context) {

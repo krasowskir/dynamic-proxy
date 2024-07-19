@@ -36,7 +36,7 @@ import static org.hibernate.cfg.PersistenceSettings.*;
 
 @Configuration
 public class GeneralConfiguration {
-    private static Logger log = LoggerFactory.getLogger(GeneralConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(GeneralConfiguration.class);
     private final static String HOST, PORT, USERNAME, PASSWORD, DATABASE_NAME;
 
     static {

@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 public class ArgumentsValidatingFilter implements Filter {
 
-    private static final String[] EXPECTED_ARGUMENT_NAMES = new String[]{"name", "id"};
+    private static final String[] EXPECTED_ARGUMENT_NAMES = new String[]{"name", "id", "age"};
     private static final Logger log = LoggerFactory.getLogger(ArgumentsValidatingFilter.class);
 
     public ArgumentsValidatingFilter() {

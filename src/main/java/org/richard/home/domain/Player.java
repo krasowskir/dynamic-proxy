@@ -4,6 +4,7 @@ package org.richard.home.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -26,6 +27,23 @@ public class Player {
     private Country countryOfBirth;
 
     public Player() {}
+
+    public Player(Integer id, String name, Integer alter, String position, LocalDate dateOfBirth, Country countryOfBirth) {
+        this.id = id;
+        this.name = name;
+        this.alter = alter;
+        this.position = position;
+        this.dateOfBirth = dateOfBirth;
+        this.countryOfBirth = countryOfBirth;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
 
     public String getName() {
         return name;
