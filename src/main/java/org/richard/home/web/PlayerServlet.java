@@ -4,6 +4,7 @@ import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,9 +12,11 @@ import org.richard.home.service.PlayerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import java.io.IOException;
 
+@WebServlet(value = {"/api/player/*"})
 public class PlayerServlet extends HttpServlet {
 
     private PlayerService playerService;
@@ -45,13 +48,15 @@ public class PlayerServlet extends HttpServlet {
     public void init() throws ServletException {
         log.info("init method without args was called...");
 
-        this.playerService = ContextLoaderListener.getCurrentWebApplicationContext().getBean(PlayerService.class);
+//        this.playerService = ContextLoaderListener.getCurrentWebApplicationContext().getBean(PlayerService.class);
+        this.playerService = ((AnnotationConfigWebApplicationContext) this.getServletContext().getAttribute("applicationContext")).getBean(PlayerService.class);
         super.init();
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         log.info("real path of file in servlet context: {}", req.getServletContext().getRealPath("rich-file"));
+        log.info("aktueller thread: {}", Thread.currentThread().getId());
         switch (req.getParameterNames().nextElement()){
             case "age" -> {
                 var players = this.playerService.findPlayerByAge(Integer.parseInt(req.getParameter("age")));

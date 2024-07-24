@@ -9,7 +9,7 @@
         <appender-ref ref="richOut" />
     </logger>
 
-    <logger name="org.eclipse.jetty" level="info">
+    <logger name="org.eclipse.jetty" level="debug">
         <appender-ref ref="richOut" />
     </logger>
 
