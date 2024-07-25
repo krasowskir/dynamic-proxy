@@ -7,8 +7,6 @@ import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.PersistenceUnitTransactionType;
-import jakarta.validation.ConstraintValidatorFactory;
-import jakarta.validation.Validation;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.richard.home.infrastructure.PlayerValidationService;
 import org.slf4j.Logger;
@@ -70,19 +68,14 @@ public class GeneralConfiguration {
         return new LocalValidatorFactoryBean();
     }
 
-    @Bean
-    public ConstraintValidatorFactory validatorFactory() {
-        return Validation.buildDefaultValidatorFactory().getConstraintValidatorFactory();
-    }
+
 
     @Bean
     public PlayerValidationService playerService() {
         return new PlayerValidationService();
     }
 
-
-    @Bean(name = "hikariDataSource")
-    public DataSource hikariDataSource() {
+    public static DataSource hikariDataSource() {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setPoolName("cookbook");
         dataSource.setMaximumPoolSize(200);
@@ -102,8 +95,7 @@ public class GeneralConfiguration {
         return dataSource;
     }
 
-    @Bean
-    public EntityManagerFactory entityManagerFactory() {
+    public static EntityManagerFactory entityManagerFactory() {
         Properties jpaProps = new Properties();
         jpaProps.put("hibernate.format_sql", "true");
         jpaProps.put("hibernate.hbm2ddl.auto", "none");
@@ -129,7 +121,7 @@ public class GeneralConfiguration {
         return new HibernatePersistenceProvider().createContainerEntityManagerFactory(myPersistenceUnitInfo(), jpaProps);
     }
 
-    private PersistenceUnitInfo myPersistenceUnitInfo() {
+    private static PersistenceUnitInfo myPersistenceUnitInfo() {
         return new PersistenceUnitInfo() {
             @Override
             public String getPersistenceUnitName() {

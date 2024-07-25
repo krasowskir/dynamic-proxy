@@ -4,7 +4,6 @@ import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,11 +11,10 @@ import org.richard.home.service.PlayerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import java.io.IOException;
 
-@WebServlet(value = {"/api/player/*"})
+//@WebServlet(value = {"/api/player/*"})
 public class PlayerServlet extends HttpServlet {
 
     private PlayerService playerService;
@@ -48,8 +46,8 @@ public class PlayerServlet extends HttpServlet {
     public void init() throws ServletException {
         log.info("init method without args was called...");
 
-//        this.playerService = ContextLoaderListener.getCurrentWebApplicationContext().getBean(PlayerService.class);
-        this.playerService = ((AnnotationConfigWebApplicationContext) this.getServletContext().getAttribute("applicationContext")).getBean(PlayerService.class);
+        this.playerService = ContextLoaderListener.getCurrentWebApplicationContext().getBean(PlayerService.class);
+//        this.playerService = ((AnnotationConfigWebApplicationContext) this.getServletContext().getAttribute("applicationContext")).getBean(PlayerService.class);
         super.init();
     }
 
