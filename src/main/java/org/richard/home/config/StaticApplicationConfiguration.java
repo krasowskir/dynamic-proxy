@@ -12,12 +12,8 @@ import org.richard.home.service.PlayerService;
 import org.richard.home.service.TeamService;
 import org.richard.home.service.TeamServiceImpl;
 import org.richard.home.web.mapper.TeamMapper;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Deprecated(since = "do not use this as we need spring context. Use static configuration")
-@Configuration
-public class ApplicationConfiguration {
+public class StaticApplicationConfiguration {
 
     public static ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
     public static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -26,21 +22,10 @@ public class ApplicationConfiguration {
 
     public static ConstraintValidatorFactory CONSTRAINT_VALIDATOR_FACTORY = VALIDATOR_FACTORY.getConstraintValidatorFactory();
 
-    public TeamMapper teamMapper() {
-        return new TeamMapper();
-    }
+    public static TeamMapper TEAM_MAPPER_INSTANCE = new TeamMapper();
 
-    @Bean
-    public TeamService teamService() {
-        return new TeamServiceImpl(ENTITY_MANAGER_FACTORY, teamMapper());
-    }
+    public static TeamService TEAM_SERVICE_INSTANCE = new TeamServiceImpl(ENTITY_MANAGER_FACTORY, TEAM_MAPPER_INSTANCE);
+    public static PlayerRepository PLAYER_REPOSITORY = new JpaPlayerRepository();
+    public static PlayerService PLAYER_SERVICE_INSTANCE = new LocalPlayerService(ENTITY_MANAGER_FACTORY, PLAYER_REPOSITORY);
 
-    @Bean
-    public PlayerService playerService() {
-        return new LocalPlayerService(ENTITY_MANAGER_FACTORY, playerRepository());
-    }
-
-    public PlayerRepository playerRepository() {
-        return new JpaPlayerRepository();
-    }
 }

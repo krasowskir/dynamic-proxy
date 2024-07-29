@@ -1,5 +1,8 @@
 package org.richard.home.web.dto;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.richard.home.config.StaticApplicationConfiguration;
+
 public class AddressDTO {
 
     private String city;
@@ -59,5 +62,14 @@ public class AddressDTO {
 
     public void setCountry(Country country) {
         this.country = country;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return StaticApplicationConfiguration.OBJECT_MAPPER.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

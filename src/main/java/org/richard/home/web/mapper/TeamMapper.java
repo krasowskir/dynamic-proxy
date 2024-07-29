@@ -17,8 +17,7 @@ public class TeamMapper {
         team.setVenue(fromTeamDTO.getVenue());
         team.setAddress(fromTeamDTO.getAddress().toString());
         team.setWebsite(fromTeamDTO.getWebsite());
-        team.setCrestUrl(null);
-        team.setWebsite(fromTeamDTO.getWebsite());
+//        team.setLeague(fromTeamDTO.getLeagueId()); // liga komplexes OBjekt!
         team.setWyId(fromTeamDTO.getWyId());
         return team;
     }

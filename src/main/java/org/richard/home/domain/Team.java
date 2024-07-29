@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -14,7 +13,8 @@ import java.util.Objects;
 public class Team {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TeamsIdGenerator")
+    @SequenceGenerator(allocationSize = 1, sequenceName = "teams_seq", name = "TeamsIdGenerator")
     private int id;
 
     private String name;
@@ -28,10 +28,11 @@ public class Team {
     private String website;
     private String owner;
     private int wyId;
-    private String crestUrl;
 
+//    private League[] league;
     @ManyToOne
-    private League[] league;
+    @JoinColumn(name = "league_id")
+    private League league;
 
     @Transient
     private JsonNode squad;
@@ -144,20 +145,11 @@ public class Team {
         this.wyId = wyId;
     }
 
-    public String getCrestUrl() {
-        return crestUrl;
-    }
-
-    public void setCrestUrl(String crestUrl) {
-        this.crestUrl = crestUrl;
-    }
-
-    @JsonProperty("activeCompetitions")
-    public League[] getLeague() {
+    public League getLeague() {
         return league;
     }
 
-    public void setLeague(League[] league) {
+    public void setLeague(League league) {
         this.league = league;
     }
 
@@ -190,8 +182,7 @@ public class Team {
                 ", website='" + website + '\'' +
                 ", owner='" + owner + '\'' +
                 ", wyId=" + wyId +
-                ", crestUrl='" + crestUrl + '\'' +
-                ", league=" + Arrays.toString(league) +
+                ", league=" + league +
                 ", squad=" + squad +
                 '}';
     }

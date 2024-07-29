@@ -29,4 +29,16 @@ Probleme: (Mapping, Validierung, Url Kodierung)
   - wie macht man multithreading [Multithreading]
   - wie injeziert man Konfigurationen [Konfiguration]
     - bzw. wie integriert sich spring in die servlet Spezifikation
+    - man kann keine Abhängigkeiten in servlets injezieren!!!
+
+
+Probleme Hibernate:
+=========
+    - wie kann ich eine foreign key relationship über ein Attribut referenzieren?
+        - Team.league = League klasse aber per ID identifizierbar
+        - Ziel: Team Ressource atomar erstellbar ohne League erstellen/referenzieren zu müssen
+                - das Ding kann nicht als League objekt dargestellt werden, wenn man die entity Team atomar erstellen wil.
+                - es muss entweder ein String attribut sein, das dann zur Laufzeit ohne foreign key constraint gemapped wird oder es muss ein
+                komplexes existierendes Objekt sein, welches dann geprüft und aus der DB geladen wird.
+                - im Falle einer fehlgeschlagenen Prüfung muss man eine Antwort auf server ebene anbieten und Tx abbrechen
   

@@ -50,6 +50,7 @@ public class App {
         context.addConfiguration();
         context.addEventListener(new ContextLoaderListener(appContext));
 
+        // ToDo: Finde heraus, wie man hier PlayerService injezieren kann!!!
         context.addServlet(PlayerServlet.class, "/player/*");
         context.addServlet(TeamServlet.class, "/teams/*");
         context.addFilter(ArgumentsValidatingFilter.class, "/player/*", EnumSet.of(DispatcherType.REQUEST));
