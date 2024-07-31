@@ -5,11 +5,11 @@ import org.richard.home.web.dto.TeamDto;
 
 public class TeamMapper {
 
-    public Team mapToTeam(TeamDto fromTeamDTO){
+    public Team mapToTeam(TeamDto fromTeamDTO) {
         var team = new Team();
         team.setName(fromTeamDTO.getName());
         team.setBudget(fromTeamDTO.getBudget());
-        team.setLogo(fromTeamDTO.getLogoUrl());
+        team.setLogo(fromTeamDTO.getLogo());
         team.setOwner(fromTeamDTO.getOwner());
         team.setEmail(fromTeamDTO.getEmail());
         team.setPhone(fromTeamDTO.getPhone());

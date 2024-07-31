@@ -11,7 +11,7 @@ public interface PlayerRepository {
 
     Player getPlayer(EntityManager entityManager, String name);
 
-    List<Player> getPlayerByAlter(EntityManager entityManager,int alter);
+    List<Player> getPlayerByAlter(EntityManager entityManager, int alter);
 
     Map<Player, Address> getAllPlayers(EntityManager entityManager);
 

@@ -1,13 +1,11 @@
 package org.richard.home;
 
-import jakarta.servlet.DispatcherType;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.ServletsConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.richard.home.config.ApplicationConfiguration;
 import org.richard.home.config.GeneralConfiguration;
-import org.richard.home.web.ArgumentsValidatingFilter;
 import org.richard.home.web.PlayerServlet;
 import org.richard.home.web.TeamServlet;
 import org.slf4j.Logger;
@@ -15,10 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import java.util.EnumSet;
-
 public class App {
     private static final Logger log = LoggerFactory.getLogger(App.class);
+
     public static void main(String[] args) {
         App app = new App();
         try {
@@ -51,9 +48,9 @@ public class App {
         context.addEventListener(new ContextLoaderListener(appContext));
 
         // ToDo: Finde heraus, wie man hier PlayerService injezieren kann!!!
-        context.addServlet(PlayerServlet.class, "/player/*");
+        context.addServlet(PlayerServlet.class, "/players/*");
         context.addServlet(TeamServlet.class, "/teams/*");
-        context.addFilter(ArgumentsValidatingFilter.class, "/player/*", EnumSet.of(DispatcherType.REQUEST));
+//        context.addFilter(ArgumentsValidatingFilter.class, "/player/*", EnumSet.of(DispatcherType.REQUEST));
         context.setWar("target/dynamic-proxy-1.0.war");
         context.setContextPath("/api");
 

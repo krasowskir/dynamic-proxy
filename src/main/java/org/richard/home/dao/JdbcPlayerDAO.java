@@ -18,6 +18,7 @@ import java.util.*;
 
 @Component
 public class JdbcPlayerDAO implements PlayerDAO {
+    private static final Logger log = LoggerFactory.getLogger(JdbcPlayerDAO.class);
     public static String FIND_PLAYER_BY_NAME = "SELECT * FROM PLAYERS WHERE name = ?";
     public static String PERSIST_PLAYER = "INSERT INTO PLAYERS VALUES (?, ?, ?, ?, ?, ?)";
     public static String FIND_PLAYERS_BY_AGE = "SELECT * FROM PLAYERS WHERE ALTER = ?";
@@ -25,10 +26,6 @@ public class JdbcPlayerDAO implements PlayerDAO {
     public static String SAVE_PLAYER_LIVES_IN = "INSERT INTO LIVES_IN VALUES (?, ?)";
     public static String GET_ALL_PLAYERS = "SELECT P.*, A.* FROM PLAYERS P INNER JOIN LIVES_IN LI ON P.ID = LI.PLAYER_ID INNER JOIN ADDRESSES A ON LI.ADDRESS_ID = A.ID";
     public static String GET_ALL_PLAYERS_FROM_TEAM = "SELECT * FROM players_with_teams where teamId = ?";
-
-
-    private static final Logger log = LoggerFactory.getLogger(JdbcPlayerDAO.class);
-
     private final DataSource master;
 
     @Autowired
@@ -213,7 +210,7 @@ public class JdbcPlayerDAO implements PlayerDAO {
             throw new NotFoundException(String.format("player with name %s not found!", name));
         }
         // FORGOT TO CLOSE THE ResultSet rs!!!
-        Player tmpPlayer = new Player(rs.getInt("id"),
+        Player tmpPlayer = new Player(
                 rs.getString("name"),
                 rs.getInt("ALTER"),
                 rs.getString("position"),
@@ -230,12 +227,13 @@ public class JdbcPlayerDAO implements PlayerDAO {
         rs.beforeFirst();
         List<Player> playerList = new ArrayList<>();
         while (rs.next()) {
-            Player tmpPl = new Player(rs.getInt("id"),
+            Player tmpPl = new Player(
                     rs.getString("name"),
                     rs.getInt("ALTER"),
                     rs.getString("position"),
                     rs.getDate("date_of_birth").toLocalDate(),
                     Country.valueOf(rs.getString("country_of_birth").toUpperCase()));
+            tmpPl.setId(rs.getInt("id"));
             playerList.add(tmpPl);
         }
         return playerList;
@@ -248,7 +246,7 @@ public class JdbcPlayerDAO implements PlayerDAO {
         rs.beforeFirst();
         Map<Player, Address> playersWithAddresses = new HashMap<>();
         while (rs.next()) {
-            Player tmpPl = new Player(rs.getInt("id"), rs.getString("name"), rs.getInt("ALTER"), rs.getString("position"), rs.getDate("date_of_birth").toLocalDate(), Country.valueOf(rs.getString("country_of_birth").toUpperCase()));
+            Player tmpPl = new Player(rs.getString("name"), rs.getInt("ALTER"), rs.getString("position"), rs.getDate("date_of_birth").toLocalDate(), Country.valueOf(rs.getString("country_of_birth").toUpperCase()));
             tmpPl.setId(rs.getInt("id"));
             Address tmpAddr = new Address(rs.getInt("id"),
                     rs.getString("city"),

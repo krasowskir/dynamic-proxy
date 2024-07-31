@@ -20,14 +20,12 @@ import java.util.List;
 @Component
 public class TeamDAO {
 
-    private static final Logger log = LoggerFactory.getLogger(TeamDAO.class);
-
-    private final DataSource master;
-
     static final String FETCH_TEAMS = "SELECT id, name, budget, logo, owner FROM TEAMS";
     static final String FETCH_TEAM_BY_ID = "SELECT * FROM TEAMS WHERE ID = ?";
     static final String FETCH_TRAINER_BY_TEAM_ID = "SELECT tr.* FROM TRAINERS TR inner JOIN TEAMS TE ON TR.WYID = TE.WYID WHERE TE.ID = ?";
     static final String FETCH_TEAMS_BY_LEAGUE = "SELECT id, name, budget, logo, owner FROM TEAMS where league_id = ?";
+    private static final Logger log = LoggerFactory.getLogger(TeamDAO.class);
+    private final DataSource master;
 
     @Autowired
     public TeamDAO(@Qualifier("hikariDataSource") DataSource master) {
@@ -38,7 +36,7 @@ public class TeamDAO {
         log.debug("entering selectAllTeams");
         try (Connection con = master.getConnection()) {
             con.setAutoCommit(false);
-            try (PreparedStatement statement = con.prepareStatement(FETCH_TEAMS, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)){
+            try (PreparedStatement statement = con.prepareStatement(FETCH_TEAMS, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
                 log.debug("connection could be established");
                 ResultSet rs = statement.executeQuery();
                 List<Team> teams = mapResultSetToTeams(rs);
@@ -53,7 +51,7 @@ public class TeamDAO {
         log.debug("entering fetchTeamsByLeagueId");
         try (Connection con = master.getConnection()) {
             con.setAutoCommit(false);
-            try (PreparedStatement pS = con.prepareStatement(FETCH_TEAMS_BY_LEAGUE, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)){
+            try (PreparedStatement pS = con.prepareStatement(FETCH_TEAMS_BY_LEAGUE, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
                 log.debug("connection could be established");
                 pS.setInt(1, Integer.parseInt(leagueId));
                 ResultSet rs = pS.executeQuery();
@@ -65,11 +63,11 @@ public class TeamDAO {
         }
     }
 
-    public Team getTeamById(String teamId) throws SQLException{
+    public Team getTeamById(String teamId) throws SQLException {
         log.debug("entering getTeamById");
         try (Connection con = master.getConnection()) {
             con.setAutoCommit(false);
-            try (PreparedStatement preparedStatement = con.prepareStatement(FETCH_TEAM_BY_ID, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)){
+            try (PreparedStatement preparedStatement = con.prepareStatement(FETCH_TEAM_BY_ID, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
                 log.debug("connection could be established");
                 preparedStatement.setInt(1, Integer.parseInt(teamId));
                 ResultSet rs = preparedStatement.executeQuery();
@@ -85,7 +83,7 @@ public class TeamDAO {
         log.debug("entering getTrainerFromTeam with teamId {}", teamId);
         try (Connection con = master.getConnection()) {
             con.setAutoCommit(false);
-            try (PreparedStatement preparedStatement = con.prepareStatement(FETCH_TRAINER_BY_TEAM_ID, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)){
+            try (PreparedStatement preparedStatement = con.prepareStatement(FETCH_TRAINER_BY_TEAM_ID, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
                 log.debug("connection could be established");
                 preparedStatement.setInt(1, Integer.parseInt(teamId));
                 ResultSet rs = preparedStatement.executeQuery();
@@ -97,9 +95,9 @@ public class TeamDAO {
         }
     }
 
-    private List<Team> mapResultSetToTeams(ResultSet rs){
+    private List<Team> mapResultSetToTeams(ResultSet rs) {
         try {
-            if (!rs.next()){
+            if (!rs.next()) {
                 log.error("no resultset");
                 throw new NotFoundException("no teams found!");
             } else {
@@ -123,9 +121,9 @@ public class TeamDAO {
         }
     }
 
-    private Team mapResultSetToSingleTeam(ResultSet rs){
+    private Team mapResultSetToSingleTeam(ResultSet rs) {
         try {
-            if (!rs.next()){
+            if (!rs.next()) {
                 log.error("no resultset");
                 throw new NotFoundException("no teams found!");
             } else {
@@ -151,9 +149,10 @@ public class TeamDAO {
             return null;
         }
     }
-    private Trainer mapResultSetToSingleTrainer(ResultSet rs){
+
+    private Trainer mapResultSetToSingleTrainer(ResultSet rs) {
         try {
-            if (!rs.next()){
+            if (!rs.next()) {
                 log.error("no resultset");
                 throw new NotFoundException("no trainer found!");
             } else {

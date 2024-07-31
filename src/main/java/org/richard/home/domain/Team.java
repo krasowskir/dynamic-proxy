@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@DynamicUpdate
 @Entity
 @Table(name = "teams")
 public class Team {
@@ -29,7 +31,7 @@ public class Team {
     private String owner;
     private int wyId;
 
-//    private League[] league;
+    //    private League[] league;
     @ManyToOne
     @JoinColumn(name = "league_id")
     private League league;
@@ -159,7 +161,6 @@ public class Team {
         if (!(o instanceof Team team)) return false;
         return id == team.id;
     }
-
 
 
     @Override

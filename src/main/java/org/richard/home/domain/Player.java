@@ -3,6 +3,7 @@ package org.richard.home.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -10,10 +11,12 @@ import java.util.Objects;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @Table(name = "players")
+@DynamicUpdate
 public class Player {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "PlayerIdGenerator", sequenceName = "players_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PlayerIdGenerator")
     private Integer id;
 
     @Column
@@ -22,13 +25,15 @@ public class Player {
     private String position;
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
-    @Embedded
+    //    @Embedded
+    @Column(name = "country_of_birth")
+    @Enumerated(EnumType.STRING)
     private Country countryOfBirth;
 
-    public Player() {}
+    public Player() {
+    }
 
-    public Player(Integer id, String name, Integer alter, String position, LocalDate dateOfBirth, Country countryOfBirth) {
-        this.id = id;
+    public Player(String name, Integer alter, String position, LocalDate dateOfBirth, Country countryOfBirth) {
         this.name = name;
         this.alter = alter;
         this.position = position;
@@ -36,12 +41,12 @@ public class Player {
         this.countryOfBirth = countryOfBirth;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {

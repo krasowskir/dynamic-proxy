@@ -19,6 +19,21 @@ public class Address {
     @Embedded
     private Country country;
 
+    public Address(String city, String street, String plz, Country country) {
+        this(Double.valueOf(Math.random()).intValue(), city, street, plz, country);
+    }
+
+    public Address(int id, String city, String street, String plz, Country country) {
+        this.id = id;
+        this.city = city;
+        this.street = street;
+        this.plz = plz;
+        this.country = country;
+    }
+
+    public Address() {
+    }
+
     public int getId() {
         return id;
     }
@@ -57,21 +72,6 @@ public class Address {
 
     public void setCountry(Country country) {
         this.country = country;
-    }
-
-    public Address(String city, String street, String plz, Country country) {
-        this(Double.valueOf(Math.random()).intValue(), city, street, plz, country);
-    }
-
-    public Address(int id, String city, String street, String plz, Country country) {
-        this.id = id;
-        this.city = city;
-        this.street = street;
-        this.plz = plz;
-        this.country = country;
-    }
-
-    public Address() {
     }
 
     @Override

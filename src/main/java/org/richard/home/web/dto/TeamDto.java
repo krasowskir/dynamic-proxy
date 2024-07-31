@@ -1,10 +1,13 @@
 package org.richard.home.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import org.richard.home.config.StaticApplicationConfiguration;
 import org.richard.home.infrastructure.ValidAddress;
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TeamDto {
 
     @NotBlank
@@ -12,7 +15,7 @@ public class TeamDto {
     @Min(value = 0)
     private Integer budget;
     @NotBlank
-    private String logoUrl;
+    private String logo;
     @NotBlank
     private String owner;
     private String tla;
@@ -34,10 +37,25 @@ public class TeamDto {
     public TeamDto(String name, int budget, String logoUrl, String owner, String tla, AddressDTO address, String phone, String website, String email, String venue, int wyId, String leagueId) {
         this.name = name;
         this.budget = budget;
-        this.logoUrl = logoUrl;
+        this.logo = logoUrl;
         this.owner = owner;
         this.tla = tla;
         this.address = address;
+        this.phone = phone;
+        this.website = website;
+        this.email = email;
+        this.venue = venue;
+        this.wyId = wyId;
+        this.leagueId = leagueId;
+    }
+
+    public TeamDto(String name, int budget, String logoUrl, String owner, String tla, String address, String phone, String website, String email, String venue, int wyId, String leagueId) throws JsonProcessingException {
+        this.name = name;
+        this.budget = budget;
+        this.logo = logoUrl;
+        this.owner = owner;
+        this.tla = tla;
+        this.address = StaticApplicationConfiguration.OBJECT_MAPPER.readValue(address, AddressDTO.class);
         this.phone = phone;
         this.website = website;
         this.email = email;
@@ -62,12 +80,12 @@ public class TeamDto {
         this.budget = budget;
     }
 
-    public String getLogoUrl() {
-        return logoUrl;
+    public String getLogo() {
+        return logo;
     }
 
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
+    public void setLogo(String logo) {
+        this.logo = logo;
     }
 
     public String getOwner() {
@@ -93,6 +111,10 @@ public class TeamDto {
 
     public void setAddress(AddressDTO address) {
         this.address = address;
+    }
+
+    public void setAddress(String address) throws JsonProcessingException {
+        this.address = StaticApplicationConfiguration.OBJECT_MAPPER.readValue(address, AddressDTO.class);
     }
 
     public String getPhone() {
@@ -148,7 +170,7 @@ public class TeamDto {
         return "TeamDto{" +
                 ", name='" + name + '\'' +
                 ", budget=" + budget +
-                ", logoUrl='" + logoUrl + '\'' +
+                ", logo='" + logo + '\'' +
                 ", owner='" + owner + '\'' +
                 ", tla='" + tla + '\'' +
                 ", address=" + address +

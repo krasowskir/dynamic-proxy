@@ -58,23 +58,6 @@ public class GeneralConfiguration {
     public GeneralConfiguration() {
     }
 
-    @Bean
-    public MethodValidationPostProcessor methodValidationPostProcessor() {
-        return new MethodValidationPostProcessor();
-    }
-
-    @Bean
-    public LocalValidatorFactoryBean localValidatorFactoryBean() {
-        return new LocalValidatorFactoryBean();
-    }
-
-
-
-    @Bean
-    public PlayerValidationService playerService() {
-        return new PlayerValidationService();
-    }
-
     public static DataSource hikariDataSource() {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setPoolName("cookbook");
@@ -161,7 +144,7 @@ public class GeneralConfiguration {
             @Override
             public URL getPersistenceUnitRootUrl() {
                 try {
-                    return this.getClass().getClassLoader().getResource( "org/richard/home/domain").toURI().toURL();
+                    return this.getClass().getClassLoader().getResource("org/richard/home/domain").toURI().toURL();
                 } catch (MalformedURLException | URISyntaxException e) {
                     throw new RuntimeException(e);
                 }
@@ -214,6 +197,20 @@ public class GeneralConfiguration {
         };
     }
 
+    @Bean
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
+        return new MethodValidationPostProcessor();
+    }
+
+    @Bean
+    public LocalValidatorFactoryBean localValidatorFactoryBean() {
+        return new LocalValidatorFactoryBean();
+    }
+
+    @Bean
+    public PlayerValidationService playerService() {
+        return new PlayerValidationService();
+    }
 
     @Override
     public String toString() {

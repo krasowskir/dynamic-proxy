@@ -9,9 +9,10 @@
 - dispatcher mit jsp content negotiation
 - java moduls und native image (GraalVm) ausprobieren!
 - Vererbung mit TopPlayer und Amateurplayer
-- Buffering um Performance zu steigern ausprobieren 
+- Buffering um Performance zu steigern ausprobieren
 
 ## Erledigt:
+
 - jpa-model gen mit hibernate 6 und java 17
 - dirty check mit plugin
 - embedded jetty ohne artifakt

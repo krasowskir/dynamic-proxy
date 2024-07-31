@@ -1,10 +1,6 @@
 package org.richard.home.domain;
 
 
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Transient;
-
-@Embeddable
 public enum Country {
     GERMANY("GERMANY"), AUSTRIA("AUSTRIA"), SWISS("SWISS"), FRANCE("FRANCE"),
     POLAND("POLAND"), ENGLAND("England"), GHANA("GHANA"), SPAIN("SPAIN"), LATVIA("LATVIA"),
@@ -26,7 +22,6 @@ public enum Country {
     NORTHERN_IRELAND("NORTHERN_IRELAND"), COLOMBIA("COLOMBIA"), REPUBLIC_OF_IRELAND("REPUBLIC_OF_IRELAND"), SCOTLAND("Scotland"),
     JAMAICA("JAMAICA"), URUGUAY("URUGUAY"), PARAGUAY("PARAGUAY");
 
-    @Transient
     private final String name;
 
     Country(String name) {

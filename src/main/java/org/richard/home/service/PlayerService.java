@@ -10,11 +10,12 @@ public interface PlayerService {
     Player findPlayer(String id);
 
     List<Player> findPlayerByAge(int age);
+
     Map<Player, Address> getAllPlayers();
 
     List<Player> getPlayersFromTeam(int teamId);
 
-    int savePlayer(Player toSave) ;
+    Player savePlayer(Player toSave);
 
     List<Player> savePlayerList(List<Player> toSaveList);
 

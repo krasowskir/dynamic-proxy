@@ -18,11 +18,9 @@ import java.util.List;
 
 @Component
 public class LigaDAO {
-    private static final Logger log = LoggerFactory.getLogger(LigaDAO.class);
-
-    private final DataSource master;
-
     static final String FETCH_LEAGUES = "SELECT * FROM league";
+    private static final Logger log = LoggerFactory.getLogger(LigaDAO.class);
+    private final DataSource master;
 
     @Autowired
     public LigaDAO(@Qualifier("hikariDataSource") DataSource master) {

@@ -14,15 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Map;
 
-public class LocalPlayerService implements PlayerService {
+public class JpaPlayerService implements PlayerService {
 
-    private static final Logger log = LoggerFactory.getLogger(LocalPlayerService.class);
+    private static final Logger log = LoggerFactory.getLogger(JpaPlayerService.class);
 
     private final EntityManagerFactory entityManagerFactory;
     private final PlayerRepository playerRepository;
 
     @Autowired
-    public LocalPlayerService(EntityManagerFactory entityManagerFactory, PlayerRepository playerRepository) {
+    public JpaPlayerService(EntityManagerFactory entityManagerFactory, PlayerRepository playerRepository) {
         this.entityManagerFactory = entityManagerFactory;
         this.playerRepository = playerRepository;
     }
@@ -55,7 +55,7 @@ public class LocalPlayerService implements PlayerService {
 
     @Override
     public Map<Player, Address> getAllPlayers() {
-        try (var entityManager = entityManagerFactory.createEntityManager()){
+        try (var entityManager = entityManagerFactory.createEntityManager()) {
             return null;
 
         }
@@ -67,8 +67,14 @@ public class LocalPlayerService implements PlayerService {
     }
 
     @Override
-    public int savePlayer(Player toSave) {
-        return 0;
+    public Player savePlayer(Player toSave) {
+        try (var entityManager = entityManagerFactory.createEntityManager()) {
+            EntityTransaction transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(toSave);
+            transaction.commit();
+            return toSave;
+        }
     }
 
     @Override

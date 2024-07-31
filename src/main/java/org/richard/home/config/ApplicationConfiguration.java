@@ -7,10 +7,10 @@ import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
 import org.richard.home.repository.JpaPlayerRepository;
 import org.richard.home.repository.PlayerRepository;
-import org.richard.home.service.LocalPlayerService;
+import org.richard.home.service.JpaPlayerService;
+import org.richard.home.service.JpaTeamService;
 import org.richard.home.service.PlayerService;
 import org.richard.home.service.TeamService;
-import org.richard.home.service.TeamServiceImpl;
 import org.richard.home.web.mapper.TeamMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,12 +32,12 @@ public class ApplicationConfiguration {
 
     @Bean
     public TeamService teamService() {
-        return new TeamServiceImpl(ENTITY_MANAGER_FACTORY, teamMapper());
+        return new JpaTeamService(ENTITY_MANAGER_FACTORY, teamMapper());
     }
 
     @Bean
     public PlayerService playerService() {
-        return new LocalPlayerService(ENTITY_MANAGER_FACTORY, playerRepository());
+        return new JpaPlayerService(ENTITY_MANAGER_FACTORY, playerRepository());
     }
 
     public PlayerRepository playerRepository() {

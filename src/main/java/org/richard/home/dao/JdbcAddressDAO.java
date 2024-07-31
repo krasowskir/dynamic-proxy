@@ -20,13 +20,13 @@ public class JdbcAddressDAO implements AddressDAO {
 
     private final DataSource writeDataSource;
 
-    public DataSource getWriteDataSource() {
-        return writeDataSource;
-    }
-
     @Autowired
     public JdbcAddressDAO(@Qualifier("hikariDataSource") DataSource writeOnly) {
         this.writeDataSource = writeOnly;
+    }
+
+    public DataSource getWriteDataSource() {
+        return writeDataSource;
     }
 
     @Override
