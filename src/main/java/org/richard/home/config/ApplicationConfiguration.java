@@ -5,12 +5,11 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.validation.ConstraintValidatorFactory;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
+import org.richard.home.repository.JpaLeagueRepository;
 import org.richard.home.repository.JpaPlayerRepository;
+import org.richard.home.repository.LeagueRepository;
 import org.richard.home.repository.PlayerRepository;
-import org.richard.home.service.JpaPlayerService;
-import org.richard.home.service.JpaTeamService;
-import org.richard.home.service.PlayerService;
-import org.richard.home.service.TeamService;
+import org.richard.home.service.*;
 import org.richard.home.web.mapper.TeamMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +40,15 @@ public class ApplicationConfiguration {
     }
 
     public PlayerRepository playerRepository() {
-        return new JpaPlayerRepository();
+        return new JpaPlayerRepository(ENTITY_MANAGER_FACTORY);
+    }
+
+    @Bean
+    public LeagueService leagueService() {
+        return new JpaLeagueService(leagueRepository());
+    }
+
+    public LeagueRepository leagueRepository() {
+        return new JpaLeagueRepository(ENTITY_MANAGER_FACTORY);
     }
 }

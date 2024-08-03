@@ -38,7 +38,7 @@ public class JpaTeamService implements TeamService {
             foundTeam.setAddress(toTeamDTO.getAddress().toString());
     }
 
-    private static boolean isNotNullOrEmpty(String value) {
+    public static boolean isNotNullOrEmpty(String value) {
         return !(value == null || value.trim().length() == 0);
     }
 
@@ -56,6 +56,7 @@ public class JpaTeamService implements TeamService {
         return team;
     }
 
+    // ToDo: rollback der Transaktion fehlt!
     @Override
     public boolean deleteTeam(String id) {
         Objects.requireNonNull(id.trim());
@@ -78,6 +79,7 @@ public class JpaTeamService implements TeamService {
         }
     }
 
+    // ToDo: rollback der Transaktion fehlt!
     @Override
     public Team updateTeam(String teamId, TeamDto toTeamDTO) {
         try (var entityManager = entityManagerFactory.createEntityManager()) {

@@ -1,16 +1,18 @@
 package org.richard.home.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
+@Table(name = "league")
 public class League {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LeagueIdGenerator")
+    @SequenceGenerator(name = "LeagueIdGenerator", sequenceName = "leagues_seq", allocationSize = 1)
     private int id;
     private String code;
     private String name;

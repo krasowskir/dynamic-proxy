@@ -3,8 +3,6 @@ package org.richard.home.web;
 
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
-import jakarta.servlet.annotation.WebListener;
-import org.richard.home.config.ApplicationConfiguration;
 import org.richard.home.config.GeneralConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +10,6 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import java.util.Arrays;
 
-@WebListener
 public class SpringInitializer implements ServletContextListener {
 
     private static Logger log = LoggerFactory.getLogger(SpringInitializer.class);
@@ -24,7 +21,7 @@ public class SpringInitializer implements ServletContextListener {
         applicationContext.setServletContext(sce.getServletContext());
         sce.getServletContext().setAttribute("applicationContext", applicationContext);
         applicationContext.register(GeneralConfiguration.class);
-        applicationContext.register(ApplicationConfiguration.class);
+//        applicationContext.register(ApplicationConfiguration.class);
         applicationContext.refresh();
         log.info("spring initialized: {}", Arrays.stream(applicationContext.getBeanDefinitionNames()).anyMatch(name -> name.equals("applicationConfiguration")));
 

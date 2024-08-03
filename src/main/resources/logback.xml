@@ -7,7 +7,7 @@
         </encoder>
     </appender>
 
-    <logger name="org.richard.home" level="debug">
+    <logger name="org.richard.home" level="debug" additivity="false">
         <appender-ref ref="richOut"/>
     </logger>
 
@@ -19,7 +19,7 @@
         <appender-ref ref="richOut"/>
     </logger>
 
-    <root level="INFO">
+    <root level="INFO" additivity="false">
         <appender-ref ref="richOut"/>
     </root>
 

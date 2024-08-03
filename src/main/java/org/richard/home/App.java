@@ -6,6 +6,7 @@ import org.eclipse.jetty.webapp.ServletsConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.richard.home.config.ApplicationConfiguration;
 import org.richard.home.config.GeneralConfiguration;
+import org.richard.home.web.LeagueServlet;
 import org.richard.home.web.PlayerServlet;
 import org.richard.home.web.TeamServlet;
 import org.slf4j.Logger;
@@ -33,28 +34,30 @@ public class App {
         server.addConnector(connector);
 
         // Servlet web application context
-        WebAppContext context = new WebAppContext();
-        context.addConfiguration(new ServletsConfiguration());
+        WebAppContext servletContext = new WebAppContext();
+        servletContext.addConfiguration(new ServletsConfiguration());
 
         // Spring web application context
-        AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
-        appContext.register(GeneralConfiguration.class);
-        appContext.register(ApplicationConfiguration.class);
-        appContext.setServletContext(context.getServletContext());
-        appContext.refresh();
+        AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+        applicationContext.register(GeneralConfiguration.class);
+        applicationContext.register(ApplicationConfiguration.class);
+        applicationContext.setServletContext(servletContext.getServletContext());
+        applicationContext.refresh();
 
         // initialize start Spring context
-        context.addConfiguration();
-        context.addEventListener(new ContextLoaderListener(appContext));
+        servletContext.addConfiguration();
+        servletContext.addEventListener(new ContextLoaderListener(applicationContext));
 
         // ToDo: Finde heraus, wie man hier PlayerService injezieren kann!!!
-        context.addServlet(PlayerServlet.class, "/players/*");
-        context.addServlet(TeamServlet.class, "/teams/*");
+        servletContext.addServlet(PlayerServlet.class, "/players/*");
+        servletContext.addServlet(TeamServlet.class, "/teams/*");
+        servletContext.addServlet(LeagueServlet.class, "/leagues/*");
 //        context.addFilter(ArgumentsValidatingFilter.class, "/player/*", EnumSet.of(DispatcherType.REQUEST));
-        context.setWar("target/dynamic-proxy-1.0.war");
-        context.setContextPath("/api");
+//        servletContext.setErrorHandler();
+        servletContext.setWar("target/dynamic-proxy-1.0.war");
+        servletContext.setContextPath("/api");
 
-        server.setHandler(context);
+        server.setHandler(servletContext);
         server.start();
 
     }

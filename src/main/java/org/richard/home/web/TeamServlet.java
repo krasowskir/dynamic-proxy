@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Validator;
-import org.richard.home.config.ApplicationConfiguration;
 import org.richard.home.config.StaticApplicationConfiguration;
 import org.richard.home.domain.Team;
 import org.richard.home.infrastructure.exception.LeagueDoesNotExistException;
@@ -41,8 +40,8 @@ public class TeamServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        this.validator = ApplicationConfiguration.VALIDATOR_FACTORY.getValidator();
-        this.objectMapper = ApplicationConfiguration.OBJECT_MAPPER;
+        this.validator = StaticApplicationConfiguration.VALIDATOR_FACTORY.getValidator();
+        this.objectMapper = StaticApplicationConfiguration.OBJECT_MAPPER;
         this.teamService = StaticApplicationConfiguration.TEAM_SERVICE_INSTANCE;
         log.info("init method was called...");
     }

@@ -44,4 +44,5 @@ Probleme Hibernate:
                 - es muss entweder ein String attribut sein, das dann zur Laufzeit ohne foreign key constraint gemapped wird oder es muss ein
                 komplexes existierendes Objekt sein, welches dann geprüft und aus der DB geladen wird.
                 - im Falle einer fehlgeschlagenen Prüfung muss man eine Antwort auf server ebene anbieten und Tx abbrechen
-  
+    - wie kann man Transaktionsprobleme beheben
+      - zurückrollen der Transaktion

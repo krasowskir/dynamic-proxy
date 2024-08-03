@@ -1,0 +1,108 @@
+package org.richard.home.service;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.RollbackException;
+import org.richard.home.domain.League;
+import org.richard.home.repository.LeagueRepository;
+import org.richard.home.web.dto.LeagueDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
+
+import static org.richard.home.config.StaticApplicationConfiguration.ENTITY_MANAGER_FACTORY;
+import static org.richard.home.service.JpaTeamService.isNotNullOrEmpty;
+
+public class JpaLeagueService implements LeagueService {
+
+    private static final Logger log = LoggerFactory.getLogger(JpaLeagueService.class);
+
+    private LeagueRepository leagueRepository;
+
+    public JpaLeagueService(LeagueRepository leagueRepository) {
+        this.leagueRepository = leagueRepository;
+    }
+
+    @Override
+    public League createLeague(LeagueDTO leagueDTO) {
+        try (EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager()) {
+            EntityTransaction transaction = entityManager.getTransaction();
+            transaction.begin();
+            var league = mapToDomainLayer(leagueDTO);
+            entityManager.persist(league);
+            transaction.commit();
+            return league;
+        }
+    }
+
+    @Override
+    public League getLeague(String id) {
+        Objects.requireNonNull(id, "id cannot be null as parameter in service layer");
+        return leagueRepository.getLeagueById(id);
+    }
+
+    @Override
+    public League getLeagueByName(String name) {
+        Objects.requireNonNull(name, "name cannot be null in service layer!");
+        return leagueRepository.getLeagueByName(name);
+    }
+
+    @Override
+    public League getLeagueByCode(String code) {
+        Objects.requireNonNull(code, "code as parameter cannot be null in service layer!");
+        return leagueRepository.getLeagueByCode(code);
+    }
+
+
+    @Override
+    public boolean deleteLeague(String id) {
+        EntityTransaction transaction = null;
+        try (EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager()) {
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.remove(Objects.requireNonNull(entityManager.find(League.class, id)));
+            transaction.commit();
+            return true;
+        } catch (IllegalStateException | RollbackException e) {
+            log.error("something went wrong during deletion of league: {}!", id);
+            transaction.rollback();
+        } catch (NullPointerException e) {
+            log.error("league: {} could not be found!", id);
+            transaction.rollback();
+        }
+        return false;
+    }
+
+    @Override
+    public League updateLeague(String id, LeagueDTO toBe) {
+        EntityTransaction transaction = null;
+        try (EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager()) {
+            League league = entityManager.find(League.class, id);
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            league = handleUpdate(league, toBe);
+            transaction.commit();
+            return league;
+        } catch (IllegalStateException | PersistenceException e) {
+            transaction.rollback();
+        }
+        return null;
+    }
+
+    private League handleUpdate(League fromLeague, LeagueDTO toBe) {
+        return new League(
+                fromLeague.getId(),
+                isNotNullOrEmpty(toBe.getCode()) ? toBe.getCode() : fromLeague.getCode(),
+                isNotNullOrEmpty(toBe.getName()) ? toBe.getName() : fromLeague.getName()
+        );
+    }
+
+    private League mapToDomainLayer(LeagueDTO leagueDTO) {
+        var league = new League();
+        league.setCode(leagueDTO.getCode());
+        league.setName(leagueDTO.getName());
+        return league;
+    }
+}

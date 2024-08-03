@@ -7,6 +7,7 @@
 - asynchrone non-blocking Servlets [servlet-api](https://jakarta.ee/specifications/servlet/5.0/jakarta-servlet-spec-5.0#asynchronous-processing)
   - 
 - dispatcher mit jsp content negotiation
+- errorhandler schreiben
 - java moduls und native image (GraalVm) ausprobieren!
 - Vererbung mit TopPlayer und Amateurplayer
 - Buffering um Performance zu steigern ausprobieren
