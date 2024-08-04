@@ -27,13 +27,18 @@ public class JpaLeagueService implements LeagueService {
 
     @Override
     public League createLeague(LeagueDTO leagueDTO) {
+        EntityTransaction transaction = null;
         try (EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager()) {
-            EntityTransaction transaction = entityManager.getTransaction();
+            transaction = entityManager.getTransaction();
             transaction.begin();
             var league = mapToDomainLayer(leagueDTO);
             entityManager.persist(league);
             transaction.commit();
             return league;
+        } catch (IllegalStateException | PersistenceException e){
+            log.error("error while persisting league: {}", leagueDTO, e);
+            transaction.rollback();
+            throw e;
         }
     }
 
@@ -86,6 +91,7 @@ public class JpaLeagueService implements LeagueService {
             transaction.commit();
             return league;
         } catch (IllegalStateException | PersistenceException e) {
+            log.error("error while updating league: {} with id: {}", toBe, id, e);
             transaction.rollback();
         }
         return null;

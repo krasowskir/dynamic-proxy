@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public class PlayerDTO {
 
-    @NotBlank
+    @NotBlank(message = "name cannot be null or empty")
     private String name;
     @Min(value = 12, message = "age must be higher or at least 12")
     private int age;

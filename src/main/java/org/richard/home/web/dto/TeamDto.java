@@ -10,23 +10,23 @@ import org.richard.home.infrastructure.ValidAddress;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TeamDto {
 
-    @NotBlank
+    @NotBlank(message = "name cannot be null or empty")
     private String name;
-    @Min(value = 0)
+    @Min(value = 0, message = "budget must be higher than 0")
     private Integer budget;
-    @NotBlank
+    @NotBlank(message = "logo cannot be null or empty")
     private String logo;
-    @NotBlank
+    @NotBlank(message = "owner cannot be null or empty")
     private String owner;
     private String tla;
-    @ValidAddress
+    @ValidAddress(message = "address is not valid")
     private AddressDTO address;
     private String phone;
     private String website;
     private String email;
     private String venue; //Heim ort
     private Integer wyId;
-    @NotBlank
+    @NotBlank(message = "leagueId cannot be null or empty")
     private String leagueId;
 
 
