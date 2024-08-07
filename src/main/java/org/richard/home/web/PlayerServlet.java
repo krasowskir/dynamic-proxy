@@ -2,6 +2,7 @@ package org.richard.home.web;
 
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import jakarta.servlet.ServletException;
@@ -18,23 +19,27 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static jakarta.servlet.http.HttpServletResponse.*;
 import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.richard.home.config.StaticApplicationConfiguration.VALIDATOR_FACTORY;
 import static org.richard.home.web.WebConstants.HEADER_VALUE_APPLICATION_JSON;
 import static org.richard.home.web.WebConstants.HEADER_VALUE_FORM_URL_ENCODED;
 
 // ToDo: könnte mit funktionaler Programmierung implementiert werden!
 // ToDo: schreibe Tests für web layer!!!
+
+//@WebServlet(urlPatterns = "/players/*")
 public class PlayerServlet extends HttpServlet {
 
     private static final String REQ_PARAMETER_PLAYER_NAME = "name";
 
-    private static final String PLAYERS_REQUEST_PATH = "/api/players/";
+    private static final String PLAYERS_REQUEST_PATH = "/api/player";
     private static final Pattern pathPattern = Pattern.compile(PLAYERS_REQUEST_PATH);
     private static final Logger log = LoggerFactory.getLogger(PlayerServlet.class);
     private PlayerService playerService;
@@ -83,29 +88,53 @@ public class PlayerServlet extends HttpServlet {
         }
     }
 
+    private static String extractPlayerName(HttpServletRequest req) {
+        var playerName = Objects.requireNonNull(req.getParameter(REQ_PARAMETER_PLAYER_NAME),
+                "request parameter name cannot be null");
+        var playerNameWithoutSlash = playerName.startsWith("/") ? playerName.substring(1) : playerName;
+        return URLDecoder.decode(playerNameWithoutSlash, UTF_8);
+    }
+
     @Override
     public void init() throws ServletException {
         log.info("init method without args was called...");
 
-        this.playerService = Objects.requireNonNull(ContextLoaderListener.getCurrentWebApplicationContext()).getBean(PlayerService.class);
+//        this.playerService = Objects.requireNonNull(ContextLoaderListener.getCurrentWebApplicationContext()).getBean(PlayerService.class);
+        this.playerService = StaticApplicationConfiguration.PLAYER_SERVICE_INSTANCE;
         this.objectMapper = StaticApplicationConfiguration.OBJECT_MAPPER;
+        this.objectMapper.registerModule(new JavaTimeModule());
         super.init();
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         handleInvalidPath(req, resp);
+        Player foundPlayer = null;
+
         try {
-            if (HEADER_VALUE_APPLICATION_JSON.equals(req.getContentType())) {
-                String playerId = extractPlayerId(req);
-                Objects.requireNonNull(playerId.trim(), "required playerId in path is null!");
-                Player foundPlayer = playerService.findPlayerById(playerId);
-                handleResponse(resp, SC_OK, objectMapper.writeValueAsString(foundPlayer));
-            } else if (HEADER_VALUE_FORM_URL_ENCODED.equals(req.getContentType())) {
-                var playerName = Objects.requireNonNull(req.getParameter(REQ_PARAMETER_PLAYER_NAME),
-                        "request parameter name cannot be null");
-                var foundPlayer = playerService.findPlayer(playerName);
-                handleResponse(resp, SC_OK, objectMapper.writeValueAsString(foundPlayer));
+            if (req.getContentType() == null) {
+                var playerName = extractPlayerName(req);
+                var anotherPlayer = playerService.findPlayer(playerName);
+                handleResponse(resp, SC_OK, objectMapper.writeValueAsString(anotherPlayer));
+//                handleResponse(resp, SC_OK, OBJECT_MAPPER.writeValueAsString(anotherPlayer));
+            } else {
+                switch (req.getContentType()) {
+                    case HEADER_VALUE_FORM_URL_ENCODED:
+                        var playerName = extractPlayerName(req);
+                        foundPlayer = playerService.findPlayer(playerName);
+                        handleResponse(resp, SC_OK, objectMapper.writeValueAsString(foundPlayer));
+//                        handleResponse(resp, SC_OK, OBJECT_MAPPER.writeValueAsString(foundPlayer));
+                        break;
+                    case HEADER_VALUE_APPLICATION_JSON:
+                        String playerId = extractPlayerId(req);
+                        Objects.requireNonNull(playerId.trim(), "required playerId in path is null!");
+                        foundPlayer = playerService.findPlayerById(playerId);
+                        handleResponse(resp, SC_OK, objectMapper.writeValueAsString(foundPlayer));
+//                        handleResponse(resp, SC_OK, OBJECT_MAPPER.writeValueAsString(foundPlayer));
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + req.getContentType());
+                }
             }
         } catch (NullPointerException | IllegalStateException e) {
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());

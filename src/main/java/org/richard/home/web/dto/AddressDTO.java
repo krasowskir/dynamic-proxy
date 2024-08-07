@@ -66,10 +66,12 @@ public class AddressDTO {
 
     @Override
     public String toString() {
-        try {
-            return StaticApplicationConfiguration.OBJECT_MAPPER.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return "AddressDTO{" +
+                "city='" + city + '\'' +
+                ", street='" + street + '\'' +
+                ", plz='" + plz + '\'' +
+                ", houseNumber=" + houseNumber +
+                ", country=" + country +
+                '}';
     }
 }

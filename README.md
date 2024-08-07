@@ -4,6 +4,7 @@ run app:
 
 ```
 mvn exec:java -Dexec.mainClass=org.richard.home.App
+mvn exec:exec -Dexec.executable=java -Dexec.args="-cp %classpath org.richard.home.App"
 ```
 
 tests:

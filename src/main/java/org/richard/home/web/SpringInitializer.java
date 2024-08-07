@@ -10,6 +10,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import java.util.Arrays;
 
+//@WebListener
 public class SpringInitializer implements ServletContextListener {
 
     private static Logger log = LoggerFactory.getLogger(SpringInitializer.class);

@@ -4,8 +4,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.ServletsConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.richard.home.config.ApplicationConfiguration;
 import org.richard.home.config.GeneralConfiguration;
+import org.richard.home.config.StaticApplicationConfiguration;
 import org.richard.home.web.LeagueServlet;
 import org.richard.home.web.PlayerServlet;
 import org.richard.home.web.TeamServlet;
@@ -20,8 +20,10 @@ public class App {
     public static void main(String[] args) {
         App app = new App();
         try {
-            log.info("server started...");
+
+            log.info("server start...");
             app.startServer();
+            log.info("server started.");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -40,7 +42,8 @@ public class App {
         // Spring web application context
         AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
         applicationContext.register(GeneralConfiguration.class);
-        applicationContext.register(ApplicationConfiguration.class);
+        applicationContext.register(StaticApplicationConfiguration.class);
+//        var staticConfig = new StaticApplicationConfiguration();
         applicationContext.setServletContext(servletContext.getServletContext());
         applicationContext.refresh();
 

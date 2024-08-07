@@ -56,6 +56,7 @@ public class GeneralConfiguration {
     }
 
     public GeneralConfiguration() {
+        entityManagerFactory();
     }
 
     public static DataSource hikariDataSource() {
@@ -85,6 +86,8 @@ public class GeneralConfiguration {
         jpaProps.put("hibernate.show_sql", "true");
         jpaProps.put("hibernate.enable_lazy_load_no_trans", "true");
         jpaProps.put("hibernate.generate_statistics", "true");
+        jpaProps.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+//        jpaProps.put("jakarta.persistence.jdbc.url", "jdbc:postgresql://" + HOST + ":" + PORT + "/" + DATABASE_NAME);
 
         PersistenceUnitInfo persistenceUnitInfo = myPersistenceUnitInfo();
         jpaProps.put(ISOLATION, TRANSACTION_SERIALIZABLE);
@@ -195,21 +198,6 @@ public class GeneralConfiguration {
                 return null;
             }
         };
-    }
-
-    @Bean
-    public MethodValidationPostProcessor methodValidationPostProcessor() {
-        return new MethodValidationPostProcessor();
-    }
-
-    @Bean
-    public LocalValidatorFactoryBean localValidatorFactoryBean() {
-        return new LocalValidatorFactoryBean();
-    }
-
-    @Bean
-    public PlayerValidationService playerService() {
-        return new PlayerValidationService();
     }
 
     @Override

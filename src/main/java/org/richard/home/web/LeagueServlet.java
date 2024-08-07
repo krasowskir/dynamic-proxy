@@ -1,8 +1,11 @@
 package org.richard.home.web;
 
 import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.PersistenceException;
 import jakarta.servlet.ServletConfig;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +29,7 @@ import static org.richard.home.config.StaticApplicationConfiguration.VALIDATOR_F
 import static org.richard.home.web.WebConstants.*;
 
 // ToDo: refactoring nötig. Siehe PlayerServlet.
+//@WebServlet(urlPatterns = "/leagues")
 public class LeagueServlet extends HttpServlet {
 
     private static final String LEAGUE_PATH = "/api/leagues";
@@ -36,6 +40,7 @@ public class LeagueServlet extends HttpServlet {
     private static Logger log = LoggerFactory.getLogger(LeagueServlet.class);
     private Pattern pathPattern = Pattern.compile("/api/leagues/.*");
     private LeagueService leagueService;
+    private ObjectMapper objectMapper;
 
     private static void addDefaultHeader(HttpServletResponse response) {
         response.addHeader("Content-Type", "application/json");
@@ -77,6 +82,14 @@ public class LeagueServlet extends HttpServlet {
             throw new IllegalArgumentException(format("request parameter size cannot be: %s", amountOfRequestParams));
         }
     }
+    @Override
+    public void init(ServletConfig config) {
+        log.info("init method without args was called...");
+//        this.leagueService = ContextLoaderListener.getCurrentWebApplicationContext().getBean(LeagueService.class);
+        this.leagueService = StaticApplicationConfiguration.LEAGUE_SERVICE;
+        this.objectMapper = OBJECT_MAPPER;
+        this.objectMapper.registerModule(new JavaTimeModule());
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -95,7 +108,8 @@ public class LeagueServlet extends HttpServlet {
             };
             requireNonNull(foundLeague, format("no league found by provided request parameter: %s, value: %s",
                     req.getParameterNames().nextElement(), req.getParameterMap().get(req.getParameterNames().nextElement())[0]));
-            handleResponse(resp, SC_OK, OBJECT_MAPPER.writeValueAsString(foundLeague));
+//            handleResponse(resp, SC_OK, OBJECT_MAPPER.writeValueAsString(foundLeague));
+            handleResponse(resp, SC_OK, objectMapper.writeValueAsString(foundLeague));
         } catch (IllegalArgumentException e) {
             log.error("GET request received with not allowed amount {} of request parameters!", amountOfRequestParams);
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
@@ -109,10 +123,12 @@ public class LeagueServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         handleInvalidContentType(req, resp, HEADER_VALUE_APPLICATION_JSON);
         try {
-            LeagueDTO leagueDTO = StaticApplicationConfiguration.OBJECT_MAPPER.readValue(req.getInputStream(), LeagueDTO.class);
+//            LeagueDTO leagueDTO = StaticApplicationConfiguration.OBJECT_MAPPER.readValue(req.getInputStream(), LeagueDTO.class);
+            LeagueDTO leagueDTO = objectMapper.readValue(req.getInputStream(), LeagueDTO.class);
             validateAndHandleInvalid(leagueDTO);
             var createdLeague = leagueService.createLeague(leagueDTO);
-            handleResponse(resp, SC_CREATED, OBJECT_MAPPER.writeValueAsString(createdLeague));
+//            handleResponse(resp, SC_CREATED, OBJECT_MAPPER.writeValueAsString(createdLeague));
+            handleResponse(resp, SC_CREATED, objectMapper.writeValueAsString(createdLeague));
         } catch (IllegalArgumentException | NullPointerException e) {
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
         } catch (IllegalStateException | PersistenceException e) {
@@ -129,10 +145,12 @@ public class LeagueServlet extends HttpServlet {
                 String leagueId = req.getRequestURI().split(LEAGUE_PATH)[1].startsWith("/") ?
                         req.getRequestURI().split(LEAGUE_PATH)[1].substring(1) :
                         req.getRequestURI().split(LEAGUE_PATH)[1];
-                LeagueDTO leagueDTO = OBJECT_MAPPER.readValue(req.getInputStream(), LeagueDTO.class);
+//                LeagueDTO leagueDTO = OBJECT_MAPPER.readValue(req.getInputStream(), LeagueDTO.class);
+                LeagueDTO leagueDTO = objectMapper.readValue(req.getInputStream(), LeagueDTO.class);
                 validateAndHandleInvalid(leagueDTO);
                 var updatedLeague = leagueService.updateLeague(leagueId, leagueDTO);
-                handleResponse(resp, SC_OK, OBJECT_MAPPER.writeValueAsString(updatedLeague));
+//                handleResponse(resp, SC_OK, OBJECT_MAPPER.writeValueAsString(updatedLeague));
+                handleResponse(resp, SC_OK, objectMapper.writeValueAsString(updatedLeague));
             }
         } catch (IllegalArgumentException | DatabindException e) {
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
@@ -158,11 +176,5 @@ public class LeagueServlet extends HttpServlet {
         } catch (NullPointerException | IllegalStateException e) {
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
         }
-    }
-
-    @Override
-    public void init(ServletConfig config) {
-        log.info("init method without args was called...");
-        this.leagueService = ContextLoaderListener.getCurrentWebApplicationContext().getBean(LeagueService.class);
     }
 }

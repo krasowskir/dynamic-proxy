@@ -26,6 +26,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>5.5.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
             <version>1.2.12</version>
@@ -57,21 +64,6 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>
-            <version>11.0.20</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-webapp</artifactId>
-            <version>11.0.20</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>11.0.20</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-util</artifactId>
             <version>11.0.20</version>
         </dependency>
         <dependency>
@@ -130,11 +122,6 @@
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
-        <!--    <dependency>-->
-        <!--      <groupId>org.hibernate</groupId>-->
-        <!--      <artifactId>hibernate-annotations</artifactId>-->
-        <!--      <version>3.5.6-Final</version>-->
-        <!--    </dependency>-->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
@@ -146,13 +133,15 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.15.1</version>
+            <version>2.15.4</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.15.0</version>
+            <version>2.15.4</version>
+            <scope>compile</scope>
         </dependency>
 
         <!--    bean validation-->
@@ -161,7 +150,6 @@
             <artifactId>jakarta.validation-api</artifactId>
             <version>3.1.0</version>
         </dependency>
-
 
     </dependencies>
 
@@ -172,7 +160,7 @@
                 <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.3.2</version>
                 </plugin>
                 <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
                 <plugin>
@@ -185,7 +173,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.5</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
@@ -229,8 +217,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <source>17</source>
+                    <target>17</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.hibernate.orm</groupId>
@@ -238,6 +226,9 @@
                             <version>${hibernate.version}</version>
                         </path>
                     </annotationProcessorPaths>
+<!--                    <compilerArgs>-->
+<!--                        <compilerArg>&#45;&#45;enable-preview</compilerArg>-->
+<!--                    </compilerArgs>-->
                 </configuration>
             </plugin>
             <plugin>
@@ -250,52 +241,59 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>11.0.21</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
-                        <id>Hochfahren der Container für integrationstests mit jetty und restAssured</id>
+                        <id>start-my-app</id>
+                        <configuration>
+                            <async>true</async>
+                            <addResourcesToClasspath/>
+                            <executable>java</executable>
+                            <environmentVariables>
+                                <JAVA_HOME>/Users/rkrasowski/Programme/amazon-corretto-17.jdk/Contents/Home</JAVA_HOME>
+                            </environmentVariables>
+                            <arguments>
+                                <argument>-cp</argument>
+                                <classpath/>
+                                <argument>org.richard.home.App</argument>
+                            </arguments>
+                        </configuration>
                         <goals>
-                            <goal>start-war</goal>
+                            <goal>exec</goal>
                         </goals>
                         <phase>pre-integration-test</phase>
-                        <configuration>
-                            <deployMode>EMBED</deployMode>
-                            <stopKey>jettyStop</stopKey>
-                        </configuration>
                     </execution>
                     <execution>
-                        <id>Herunterfahren der Container</id>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
+                        <id>stop-my-app</id>
                         <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
                         <configuration>
-                            <stopPort>8081</stopPort>
-                            <stopKey>jettyStop</stopKey>
+                            <executable>sh</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>kill `ps -a | grep dynamic-proxy | head -1 | awk '{ printf $1}'`</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-            <!--      <plugin>-->
-            <!--        <groupId>org.hibernate.orm.tooling</groupId>-->
-            <!--        <artifactId>hibernate-enhance-maven-plugin</artifactId>-->
-            <!--        <version>${hibernate.version}</version>-->
-            <!--        <executions>-->
-            <!--          <execution>-->
-            <!--            <configuration>-->
-            <!--              <failOnError>true</failOnError>-->
-            <!--              <enableLazyInitialization>true</enableLazyInitialization>-->
-            <!--              <enableDirtyTracking>true</enableDirtyTracking>-->
-            <!--              <enableAssociationManagement>true</enableAssociationManagement>-->
-            <!--            </configuration>-->
-            <!--            <goals>-->
-            <!--              <goal>enhance</goal>-->
-            <!--            </goals>-->
-            <!--          </execution>-->
-            <!--        </executions>-->
-            <!--      </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.2.5</version>
+                <executions>
+                    <execution>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

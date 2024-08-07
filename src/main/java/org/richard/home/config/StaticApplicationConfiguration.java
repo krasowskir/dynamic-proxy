@@ -16,8 +16,9 @@ import org.richard.home.web.mapper.TeamMapper;
 
 public class StaticApplicationConfiguration {
 
+
     public static ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
-    public static ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
+    public static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public static EntityManagerFactory ENTITY_MANAGER_FACTORY = GeneralConfiguration.entityManagerFactory();
 
@@ -32,5 +33,11 @@ public class StaticApplicationConfiguration {
 
     public static LeagueRepository LEAGUE_REPOSITORY = new JpaLeagueRepository(ENTITY_MANAGER_FACTORY);
     public static LeagueService LEAGUE_SERVICE = new JpaLeagueService(LEAGUE_REPOSITORY);
+
+    private static ObjectMapper createObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
+    }
 
 }

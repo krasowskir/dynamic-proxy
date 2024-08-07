@@ -1,9 +1,11 @@
 package org.richard.home.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.NoResultException;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,10 +28,11 @@ import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
-import static org.richard.home.config.StaticApplicationConfiguration.VALIDATOR_FACTORY;
+import static org.richard.home.config.StaticApplicationConfiguration.*;
 import static org.richard.home.web.WebConstants.HEADER_VALUE_APPLICATION_JSON;
 import static org.richard.home.web.WebConstants.HEADER_VALUE_FORM_URL_ENCODED;
 
+//@WebServlet(urlPatterns = "/teeams")
 public class TeamServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(TeamServlet.class);
@@ -80,8 +83,9 @@ public class TeamServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        this.objectMapper = StaticApplicationConfiguration.OBJECT_MAPPER;
-        this.teamService = StaticApplicationConfiguration.TEAM_SERVICE_INSTANCE;
+        this.objectMapper = OBJECT_MAPPER;
+        this.objectMapper.registerModule(new JavaTimeModule());
+        this.teamService = TEAM_SERVICE_INSTANCE;
         log.info("init method was called...");
     }
 

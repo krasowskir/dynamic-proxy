@@ -12,9 +12,18 @@
 - Vererbung mit TopPlayer und Amateurplayer
 - Buffering um Performance zu steigern ausprobieren
 
+
 ## Erledigt:
 
 - jpa-model gen mit hibernate 6 und java 17
 - dirty check mit plugin
 - embedded jetty ohne artifakt
 - jetty 11 und servlet 5 specification
+
+
+
+## Probleme:
+- wie stoppt man maven-exec prozesse? -> es gibt kein stop goal!
+  - mit jetty-maven plugin gibt es das Problem nicht!
+- wie startet man die Application in einem anderen thread, separat vom maven lifecycle?
+  - exec-maven-plugin führt alles nur in einer VM aus. -> forkMode oder jetty plugin
