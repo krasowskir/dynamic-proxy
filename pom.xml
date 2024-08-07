@@ -31,6 +31,11 @@
             <version>5.5.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-path</artifactId>
+            <version>5.5.0</version>
+        </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -153,34 +158,7 @@
 
     </dependencies>
 
-
     <build>
-        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-            <plugins>
-                <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
-                <plugin>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.3.2</version>
-                </plugin>
-                <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
-                <plugin>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.3.0</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.2.5</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.2</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -226,9 +204,7 @@
                             <version>${hibernate.version}</version>
                         </path>
                     </annotationProcessorPaths>
-<!--                    <compilerArgs>-->
-<!--                        <compilerArg>&#45;&#45;enable-preview</compilerArg>-->
-<!--                    </compilerArgs>-->
+                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
@@ -255,6 +231,7 @@
                                 <JAVA_HOME>/Users/rkrasowski/Programme/amazon-corretto-17.jdk/Contents/Home</JAVA_HOME>
                             </environmentVariables>
                             <arguments>
+                                <argument>--enable-preview</argument>
                                 <argument>-cp</argument>
                                 <classpath/>
                                 <argument>org.richard.home.App</argument>
@@ -264,6 +241,16 @@
                             <goal>exec</goal>
                         </goals>
                         <phase>pre-integration-test</phase>
+                    </execution>
+                    <execution>
+                        <id>wait-for-startup</id>
+                        <configuration>
+                            <executable>${basedir}/scripts/check_application_started_up.sh</executable>
+                        </configuration>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
                     </execution>
                     <execution>
                         <id>stop-my-app</id>
@@ -284,9 +271,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.2.5</version>
                 <executions>
                     <execution>
+                        <id>my-integration-tests</id>
                         <phase>integration-test</phase>
                         <goals>
                             <goal>integration-test</goal>

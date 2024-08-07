@@ -6,6 +6,7 @@ import org.eclipse.jetty.webapp.ServletsConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.richard.home.config.GeneralConfiguration;
 import org.richard.home.config.StaticApplicationConfiguration;
+import org.richard.home.web.HealthServlet;
 import org.richard.home.web.LeagueServlet;
 import org.richard.home.web.PlayerServlet;
 import org.richard.home.web.TeamServlet;
@@ -55,13 +56,20 @@ public class App {
         servletContext.addServlet(PlayerServlet.class, "/players/*");
         servletContext.addServlet(TeamServlet.class, "/teams/*");
         servletContext.addServlet(LeagueServlet.class, "/leagues/*");
+        servletContext.addServlet(HealthServlet.class, "/health/*");
 //        context.addFilter(ArgumentsValidatingFilter.class, "/player/*", EnumSet.of(DispatcherType.REQUEST));
 //        servletContext.setErrorHandler();
         servletContext.setWar("target/dynamic-proxy-1.0.war");
         servletContext.setContextPath("/api");
 
         server.setHandler(servletContext);
-        server.start();
+        boolean isStarted;
+        do {
+            server.start();
+            Thread.sleep(1000);
+            isStarted = server.isStarted();
+            log.info("waiting for server to complete starting... isStarted: {}", isStarted);
+        } while (!server.isStarted());
 
     }
 
