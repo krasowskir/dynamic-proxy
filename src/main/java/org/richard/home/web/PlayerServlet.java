@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,83 +15,27 @@ import org.richard.home.web.dto.PlayerDTO;
 import org.richard.home.web.mapper.PlayerMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.ContextLoaderListener;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static jakarta.servlet.http.HttpServletResponse.*;
 import static java.lang.String.format;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.richard.home.config.StaticApplicationConfiguration.VALIDATOR_FACTORY;
-import static org.richard.home.web.WebConstants.HEADER_VALUE_APPLICATION_JSON;
-import static org.richard.home.web.WebConstants.HEADER_VALUE_FORM_URL_ENCODED;
+import static org.richard.home.web.WebConstants.*;
+import static org.richard.home.web.WebUtils.*;
 
 // ToDo: könnte mit funktionaler Programmierung implementiert werden!
 // ToDo: schreibe Tests für web layer!!!
 
-//@WebServlet(urlPatterns = "/players/*")
 public class PlayerServlet extends HttpServlet {
 
-    private static final String REQ_PARAMETER_PLAYER_NAME = "name";
-
     private static final String PLAYERS_REQUEST_PATH = "/api/players";
-    private static final Pattern pathPattern = Pattern.compile(PLAYERS_REQUEST_PATH);
     private static final Logger log = LoggerFactory.getLogger(PlayerServlet.class);
     private PlayerService playerService;
     private ObjectMapper objectMapper;
 
     public PlayerServlet() {
-    }
-
-    private static void addDefaultHeader(HttpServletResponse response) {
-        response.addHeader("Content-Type", "application/json");
-        response.addHeader("X-Powered-By", "Jetty 11");
-    }
-
-    private static String extractPlayerId(HttpServletRequest request) {
-        return request.getRequestURI().split(PLAYERS_REQUEST_PATH)[1];
-    }
-
-    private static void handleResponse(HttpServletResponse resp, int scBadRequest, String e) throws IOException {
-        resp.setStatus(scBadRequest);
-        addDefaultHeader(resp);
-        resp.getWriter().println(e);
-    }
-
-    private static void validateAndHandleInvalid(PlayerDTO playerDTO) {
-        var errors = VALIDATOR_FACTORY.getValidator().validate(playerDTO);
-        if (!errors.isEmpty()) {
-            var errorMessagesCombined = errors.stream()
-                    .map(error -> {
-                        log.error("validation error: {}", error.getMessage());
-                        return error.getMessage();
-                    }).collect(Collectors.joining(";\n"));
-            throw new IllegalArgumentException(errorMessagesCombined);
-        }
-    }
-
-    private static void handleBadContentType(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (!request.getContentType().equals(HEADER_VALUE_APPLICATION_JSON)) {
-            log.error("tried to call uri: {} with invalid content type: {}", request.getRequestURI(), request.getContentType());
-            handleResponse(response, SC_BAD_REQUEST, format("invalid content type used: %s", request.getContentType()));
-        }
-    }
-
-    private static void handleInvalidPath(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (!pathPattern.matcher(request.getRequestURI()).matches()) {
-            handleResponse(response, SC_BAD_REQUEST, format("path used: %s is not appropriate!", request.getRequestURI()));
-        }
-    }
-
-    private static String extractPlayerName(HttpServletRequest req) {
-        var playerName = Objects.requireNonNull(req.getParameter(REQ_PARAMETER_PLAYER_NAME),
-                "request parameter name cannot be null");
-        var playerNameWithoutSlash = playerName.startsWith("/") ? playerName.substring(1) : playerName;
-        return URLDecoder.decode(playerNameWithoutSlash, UTF_8);
     }
 
     @Override
@@ -107,26 +50,22 @@ public class PlayerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        handleInvalidPath(req, resp);
         Player foundPlayer = null;
-
         try {
-            switch (req.getContentType()) {
-                case null, HEADER_VALUE_FORM_URL_ENCODED:
-                    var playerName = extractPlayerName(req);
+            switch (stripCharset(req.getContentType())) {
+                case null, HEADER_VALUE_FORM_URL_ENCODED -> {
+                    handleInvalidPath(req, resp, PLAYERS_REQUEST_PATH);
+                    var playerName = extractRequestParam(req, REQ_PARAMETER_NAME);
                     foundPlayer = playerService.findPlayer(playerName);
                     handleResponse(resp, SC_OK, objectMapper.writeValueAsString(foundPlayer));
-//                        handleResponse(resp, SC_OK, OBJECT_MAPPER.writeValueAsString(foundPlayer));
-                    break;
-                case HEADER_VALUE_APPLICATION_JSON:
-                    String playerId = extractPlayerId(req);
+                }
+                case HEADER_VALUE_APPLICATION_JSON -> {
+                    String playerId = extractPlayerId(req, PLAYERS_REQUEST_PATH);
                     Objects.requireNonNull(playerId.trim(), "required playerId in path is null!");
                     foundPlayer = playerService.findPlayerById(playerId);
                     handleResponse(resp, SC_OK, objectMapper.writeValueAsString(foundPlayer));
-//                        handleResponse(resp, SC_OK, OBJECT_MAPPER.writeValueAsString(foundPlayer));
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + req.getContentType());
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + req.getContentType());
             }
         } catch (NullPointerException | IllegalStateException e) {
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
@@ -137,7 +76,7 @@ public class PlayerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        handleBadContentType(req, resp);
+        handleBadContentType(req, resp, log);
         PlayerDTO playerDTO = null;
         try {
             playerDTO = objectMapper.readValue(req.getInputStream(), PlayerDTO.class);
@@ -153,10 +92,10 @@ public class PlayerServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        handleBadContentType(req, resp);
+        handleBadContentType(req, resp, log);
         String playerId = null;
         try {
-            playerId = extractPlayerId(req);
+            playerId = extractPlayerId(req, PLAYERS_REQUEST_PATH);
             Objects.requireNonNull(playerId.trim(), "required playerId in path is null!");
             var playerDTO = objectMapper.readValue(req.getInputStream(), PlayerDTO.class);
             validateAndHandleInvalid(playerDTO);
@@ -170,7 +109,7 @@ public class PlayerServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        handleInvalidPath(req, resp);
+        handleInvalidPath(req, resp, PLAYERS_REQUEST_PATH);
         String playerId = null;
         try {
             playerId = req.getRequestURI().split(PLAYERS_REQUEST_PATH)[1];

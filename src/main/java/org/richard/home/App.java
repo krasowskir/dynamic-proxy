@@ -59,7 +59,8 @@ public class App {
         servletContext.addServlet(HealthServlet.class, "/health/*");
 //        context.addFilter(ArgumentsValidatingFilter.class, "/player/*", EnumSet.of(DispatcherType.REQUEST));
 //        servletContext.setErrorHandler();
-        servletContext.setWar("target/dynamic-proxy-1.0.war");
+//        servletContext.setWar("target/dynamic-proxy-1.0.war");
+        servletContext.setResourceBase("target/dynamic-proxy-1.0.jar");
         servletContext.setContextPath("/api");
 
         server.setHandler(servletContext);
