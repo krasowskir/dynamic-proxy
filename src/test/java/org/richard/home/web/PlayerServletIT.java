@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.*;
 // ToDo: startet aktuell alles. Webschicht sollte isoliert vertestet werden!
 class PlayerServletIT {
     private static final String FORM_URL_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded; charset=UTF-8";
+    private static final String APPLICATION_JSON = "application/json";
     private static final String INVALID_CONTENT_TYPE = "invalid-contentType";
 
     private static Logger log = LoggerFactory.getLogger(PlayerServletIT.class);
@@ -66,7 +67,7 @@ class PlayerServletIT {
                     .then()
                     .statusCode(200)
                     .and()
-                    .header("Content-Type", "application/json")
+                    .header("Content-Type", APPLICATION_JSON)
                     .body(
                             "id", equalTo(177251),
                             "name", equalTo("Maximilian Braune"),
@@ -159,6 +160,63 @@ class PlayerServletIT {
                     .statusCode(201)
                     .and()
                     .body(stringContainsInOrder("\"name\":\"Richard Johanson\",\"alter\":33,\"position\":\"STRIKER\",\"dateOfBirth\":[1991,6,20],\"countryOfBirth\":\"GERMANY\""));
+        }
+    }
+
+    @Tag("PutPlayers")
+    @Nested
+    class PutPlayers {
+
+        @ParameterizedTest
+        @ValueSource(strings = {INVALID_CONTENT_TYPE, FORM_URL_ENCODED_CONTENT_TYPE})
+        void testUpdatePlayerContentType(String contentType) {
+            RestAssured
+                    .given()
+                    .baseUri("http://localhost:8080")
+                    .header(new Header("Content-Type", contentType))
+                    .put("/api/players")
+                    .then()
+                    .statusCode(400)
+                    .body(stringContainsInOrder("tried to call uri", "with invalid content type"));
+        }
+
+        @Test
+        void testEmptyPlayerIdInPath() {
+            RestAssured
+                    .given()
+                    .baseUri("http://localhost:8080")
+                    .header(new Header("Content-Type", APPLICATION_JSON))
+                    .put("/api/players/")
+                    .then()
+                    .statusCode(400)
+                    .body(stringContainsInOrder("required playerId in path is null"));
+        }
+
+        @ParameterizedTest
+        @ArgumentsSource(MyArgumentsProvider.class)
+        void testUpdatePlayerFailingValidation(Map.Entry<String, String> arg) {
+            RestAssured.given()
+                    .baseUri("http://localhost:8080")
+                    .header(new Header("Content-Type", "application/json; charset=UTF-8"))
+                    .body(arg.getKey())
+                    .put("/api/players/177327")
+                    .then()
+                    .statusCode(400)
+                    .and()
+                    .body(stringContainsInOrder(arg.getValue()));
+        }
+
+        @Test
+        void testUpdatePlayerHppyPath() {
+            RestAssured.given()
+                    .baseUri("http://localhost:8080")
+                    .header(new Header("Content-Type", "application/json; charset=UTF-8"))
+                    .body("{\"name\":\"Richard Johanson\",\"age\":33,\"position\":\"STRIKER\",\"dateOfBirth\":\"1991-06-21\",\"countryOfBirth\":\"SENEGAL\"}")
+                    .put("/api/players/177327")
+                    .then()
+                    .statusCode(200)
+                    .and()
+                    .body(stringContainsInOrder("{\"id\":177327,\"name\":\"Richard Johanson\",\"alter\":33,\"position\":\"STRIKER\",\"dateOfBirth\":[1991,6,21],\"countryOfBirth\":\"SENEGAL\"}"));
         }
     }
 

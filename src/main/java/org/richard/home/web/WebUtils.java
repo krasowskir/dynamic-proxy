@@ -4,20 +4,22 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.richard.home.web.dto.PlayerDTO;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.richard.home.config.StaticApplicationConfiguration.VALIDATOR_FACTORY;
-import static org.richard.home.web.WebConstants.HEADER_VALUE_APPLICATION_JSON;
 
 public class WebUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(WebUtils.class);
 
     public static String wrapIntoRegex(String input) {
         StringBuilder strB = new StringBuilder(input);
@@ -31,8 +33,11 @@ public class WebUtils {
 
     public static String extractPlayerId(HttpServletRequest request, String path) {
         return Pattern.compile("/api/players/.*").matcher(request.getRequestURI()).matches() ?
-                request.getRequestURI().split(path)[1].substring(1) : null;
-
+                Optional.of(request.getRequestURI().split(path)[1].substring(1))
+                        .stream()
+                        .takeWhile(elem -> !elem.isBlank())
+                        .findFirst()
+                        .orElse(null) : null;
     }
 
     public static void handleResponse(HttpServletResponse resp, int scBadRequest, String e) throws IOException {
@@ -51,9 +56,9 @@ public class WebUtils {
         }
     }
 
-    public static void handleBadContentType(HttpServletRequest request, Logger log) {
-        if (!stripCharset(request.getContentType()).equals(HEADER_VALUE_APPLICATION_JSON)) {
-            log.error("tried to call uri: {} with invalid content type: {}", request.getRequestURI(), request.getContentType());
+    public static void handleBadContentType(HttpServletRequest request, String expectedContentType) {
+        if (!stripCharset(request.getContentType()).equals(expectedContentType)) {
+            log.warn("tried to call uri: {} with invalid content type: {}", request.getRequestURI(), request.getContentType());
             throw new IllegalArgumentException(format("tried to call uri: %s with invalid content type: %s", request.getRequestURI(), request.getContentType()));
         }
     }

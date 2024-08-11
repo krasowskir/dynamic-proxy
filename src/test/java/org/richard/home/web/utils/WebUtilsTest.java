@@ -4,15 +4,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.richard.home.web.WebUtils;
 
 import java.io.IOException;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class WebUtilsTest {
+
 
     @Test
     void testHandleInvalidPath_filters_out() throws IOException {
@@ -57,7 +62,7 @@ class WebUtilsTest {
         var httpResponse = mock(HttpServletResponse.class);
 
         // when
-        Assertions.assertDoesNotThrow(() -> WebUtils.handleInvalidPath(mockedRequest, httpResponse, validPath));
+        assertDoesNotThrow(() -> WebUtils.handleInvalidPath(mockedRequest, httpResponse, validPath));
     }
 
     @Test
@@ -99,5 +104,41 @@ class WebUtilsTest {
         String extractedName = WebUtils.extractRequestParam(mockedRequest, parameterName);
         assertFalse(playerName.equals(extractedName));
         assertTrue(extractedName.equals("Richard Johanson"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "  "})
+    void testExtractPlayerId(String input){
+        // given
+        var mockedRequest = mock(HttpServletRequest.class);
+        when(mockedRequest.getRequestURI()).thenReturn("http://localhost:8080/api/players/".concat(input));
+
+        // expect
+        Assertions.assertNull(WebUtils.extractPlayerId(mockedRequest, "/api/players/.*"));
+
+        // and
+        var secondMockedRequest = mock(HttpServletRequest.class);
+        when(secondMockedRequest.getRequestURI()).thenReturn("http://localhost:8080/api/players".concat(input));
+        Assertions.assertNull(WebUtils.extractPlayerId(mockedRequest, "/api/players/.*"));
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ContentTypeProvider.class)
+    void testHandleBadContentType(Map.Entry<String, Object[]> args) {
+
+        // given
+        String providedContentType = args.getKey();
+        String expectedContentType = String.valueOf(args.getValue()[0]);
+        Boolean expectedResult = Boolean.parseBoolean(String.valueOf(args.getValue()[1]));
+
+        var mockedRequest = mock(HttpServletRequest.class);
+        when(mockedRequest.getContentType()).thenReturn(providedContentType);
+
+        if (expectedResult){
+            assertDoesNotThrow(() -> WebUtils.handleBadContentType(mockedRequest, expectedContentType));
+        } else {
+            assertThrows(IllegalArgumentException.class,
+                    () -> WebUtils.handleBadContentType(mockedRequest, expectedContentType));
+        }
     }
 }

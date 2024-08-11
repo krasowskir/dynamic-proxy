@@ -1,8 +1,5 @@
 package org.richard.home.web.dto;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.richard.home.config.StaticApplicationConfiguration;
-
 public class AddressDTO {
 
     private String city;

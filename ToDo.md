@@ -11,6 +11,8 @@
 - java moduls und native image (GraalVm) ausprobieren!
 - Vererbung mit TopPlayer und Amateurplayer
 - Buffering um Performance zu steigern ausprobieren
+- WAF ausprobieren
+- OpenIdConnect & oauth2 integration implementieren
 
 
 ## Erledigt:
@@ -19,6 +21,7 @@
 - dirty check mit plugin
 - embedded jetty ohne artifakt
 - jetty 11 und servlet 5 specification
+- Redis & hibernate cache integration
 
 
 

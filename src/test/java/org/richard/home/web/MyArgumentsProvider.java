@@ -54,6 +54,13 @@ class MyArgumentsProvider implements ArgumentsProvider {
             }
             """;
 
+    private static final String BROKEN_JSON = """
+            {
+              "name": "Richard Johanson",
+              "agBROKEN JSON
+            }
+            """;
+
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws Exception {
         return Map.of(
@@ -61,7 +68,8 @@ class MyArgumentsProvider implements ArgumentsProvider {
                 PLAYER_JSON_BAD_AGE, "age must be higher or at least 12",
                 PLAYER_JSON_EMPTY_POSITION, "darf nicht leer sein",
                 PLAYER_JSON_EMPTY_BIRTHDATE, "darf nicht leer sein",
-                PLAYER_JSON_WRONG_COUNTRY, "Cannot deserialize value of type `org.richard.home.web.dto.Country` from String \"AlemaNiaaa\""
+                PLAYER_JSON_WRONG_COUNTRY, "Cannot deserialize value of type `org.richard.home.web.dto.Country` from String \"AlemaNiaaa\"",
+                BROKEN_JSON, "Illegal unquoted character"
         ).entrySet().stream().map(Arguments::of);
     }
 }

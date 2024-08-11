@@ -1,6 +1,6 @@
 package org.richard.home.web;
 
-import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.NoResultException;
@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import static jakarta.servlet.http.HttpServletResponse.*;
 import static java.lang.String.format;
@@ -75,13 +74,13 @@ public class PlayerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         PlayerDTO playerDTO = null;
         try {
-            handleBadContentType(req, log);
+            handleBadContentType(req, HEADER_VALUE_APPLICATION_JSON);
             playerDTO = objectMapper.readValue(req.getInputStream(), PlayerDTO.class);
             validateAndHandleInvalid(playerDTO);
             var player = PlayerMapper.fromWebLayerTo(playerDTO);
             player = playerService.savePlayer(player);
             handleResponse(resp, SC_CREATED, objectMapper.writeValueAsString(player));
-        } catch (IllegalArgumentException | DatabindException e) {
+        } catch (IllegalArgumentException | JsonProcessingException e) {
             log.warn("invalid input provided for saving player: {}", playerDTO);
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
         }
@@ -91,14 +90,14 @@ public class PlayerServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String playerId = null;
         try {
-            handleBadContentType(req, log);
+            handleBadContentType(req, HEADER_VALUE_APPLICATION_JSON);
             playerId = extractPlayerId(req, PLAYERS_REQUEST_PATH);
-            Objects.requireNonNull(playerId.trim(), "required playerId in path is null!");
+            Objects.requireNonNull(playerId, "required playerId in path is null!");
             var playerDTO = objectMapper.readValue(req.getInputStream(), PlayerDTO.class);
             validateAndHandleInvalid(playerDTO);
             var updatedPlayer = playerService.updatePlayerById(playerDTO, playerId);
             handleResponse(resp, SC_OK, objectMapper.writeValueAsString(updatedPlayer));
-        } catch (NullPointerException | DatabindException | IllegalArgumentException e) {
+        } catch (NullPointerException | JsonProcessingException | IllegalArgumentException e) {
             log.warn("invalid input provided for updating of player: {}!", playerId);
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
         }

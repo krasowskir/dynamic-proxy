@@ -2,7 +2,6 @@ package org.richard.home;
 
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.richard.home.config.GeneralConfiguration;
 import org.slf4j.Logger;
@@ -17,7 +16,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-@Disabled
 class ConnectionTest {
 
     private static final String HOST, USERNAME, PASSWORD, PORT, DATABASE_NAME;
@@ -58,7 +56,7 @@ class ConnectionTest {
             }
         } catch (SQLException | ClassNotFoundException e) {
             log.info("{} connections established", amountOfConnections);
-            log.error("error while obtaining connection", e);
+            log.error("error while obtaining connection");
         }
     }
 
@@ -89,7 +87,7 @@ class ConnectionTest {
             }
         } catch (SQLException | ClassNotFoundException e) {
             log.info("{} connections established", amountOfConnections);
-            log.error("error while obtaining connection", e);
+            log.error("error while obtaining connection");
         }
     }
 }
