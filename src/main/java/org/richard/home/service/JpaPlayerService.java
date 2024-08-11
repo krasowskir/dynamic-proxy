@@ -145,8 +145,12 @@ public class JpaPlayerService implements PlayerService {
                 entityManager.remove(Optional.ofNullable(entityManager.find(Player.class, playerId)).orElseThrow(() -> new NoResultException("no player found with id " + playerId)));
                 transaction.commit();
                 return true;
+            } catch (NoResultException e){
+                log.error("could not delete player: {} as it could not be found!: ", playerId);
+                transaction.rollback();
+                throw e;
             } catch (IllegalStateException | PersistenceException e) {
-                log.error("error while deleting player: " + playerId, e);
+                log.error("error while deleting player: {}", playerId, e);
                 transaction.rollback();
                 throw e;
             }

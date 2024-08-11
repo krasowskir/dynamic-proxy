@@ -27,11 +27,8 @@ class WebUtilsTest {
         var mockedRequest = mock(HttpServletRequest.class);
         when(mockedRequest.getRequestURI()).thenReturn(notMatchingPath);
 
-        // and
-        var httpResponse = mock(HttpServletResponse.class);
-
         // expect
-        Assertions.assertThrows(IllegalStateException.class, () -> WebUtils.handleInvalidPath(mockedRequest, httpResponse, validPath));
+        Assertions.assertThrows(IllegalStateException.class, () -> WebUtils.handleInvalidPath(mockedRequest, validPath));
 
     }
 
@@ -43,11 +40,8 @@ class WebUtilsTest {
         var mockedRequest = mock(HttpServletRequest.class);
         when(mockedRequest.getRequestURI()).thenReturn(uri);
 
-        // and
-        var httpResponse = mock(HttpServletResponse.class);
-
         // expect
-        Assertions.assertThrows(IllegalStateException.class, () -> WebUtils.handleInvalidPath(mockedRequest, httpResponse, misleadPath));
+        Assertions.assertThrows(IllegalStateException.class, () -> WebUtils.handleInvalidPath(mockedRequest, misleadPath));
     }
 
     @Test
@@ -58,11 +52,8 @@ class WebUtilsTest {
         var mockedRequest = mock(HttpServletRequest.class);
         when(mockedRequest.getRequestURI()).thenReturn(uri);
 
-        // and
-        var httpResponse = mock(HttpServletResponse.class);
-
         // when
-        assertDoesNotThrow(() -> WebUtils.handleInvalidPath(mockedRequest, httpResponse, validPath));
+        assertDoesNotThrow(() -> WebUtils.handleInvalidPath(mockedRequest, validPath));
     }
 
     @Test

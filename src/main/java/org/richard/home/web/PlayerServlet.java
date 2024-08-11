@@ -50,7 +50,7 @@ public class PlayerServlet extends HttpServlet {
         try {
             switch (stripCharset(req.getContentType())) {
                 case null, HEADER_VALUE_FORM_URL_ENCODED -> {
-                    handleInvalidPath(req, resp, PLAYERS_REQUEST_PATH);
+                    handleInvalidPath(req, PLAYERS_REQUEST_PATH);
                     var playerName = extractRequestParam(req, REQ_PARAMETER_NAME);
                     foundPlayer = playerService.findPlayer(playerName);
                     handleResponse(resp, SC_OK, objectMapper.writeValueAsString(foundPlayer));
@@ -107,14 +107,18 @@ public class PlayerServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String playerId = null;
         try {
-            handleInvalidPath(req, resp, PLAYERS_REQUEST_PATH);
-            playerId = req.getRequestURI().split(PLAYERS_REQUEST_PATH)[1];
+            playerId = extractPlayerId(req, PLAYERS_REQUEST_PATH);
+            Objects.requireNonNull(playerId, "required playerId in path is null!");
             if (playerService.deletePlayerById(playerId)) {
                 handleResponse(resp, SC_OK, format("player: %s deleted successfully!", playerId));
             } else {
                 handleResponse(resp, SC_BAD_REQUEST, format("player: %s could not be deleted successfully!", playerId));
             }
-        } catch (IllegalStateException | PersistenceException e) {
+        } catch (NoResultException e){
+            log.error("deleting of player: {} failed!", playerId);
+            handleResponse(resp, SC_BAD_REQUEST, format("failed to delete player: %s", playerId));
+        }
+        catch (IllegalStateException | PersistenceException e) {
             log.error("deleting of player: {} failed!", playerId);
             handleResponse(resp, SC_INTERNAL_SERVER_ERROR, format("failed to delete player: %s", playerId));
         }

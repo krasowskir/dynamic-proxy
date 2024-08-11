@@ -1,5 +1,8 @@
 package org.richard.home.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.Header;
 import org.junit.jupiter.api.Nested;
@@ -15,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
+
 
 // ToDo: startet aktuell alles. Webschicht sollte isoliert vertestet werden!
 class PlayerServletIT {
@@ -220,4 +224,74 @@ class PlayerServletIT {
         }
     }
 
+    @Nested
+    @Tag("DeletePlayers")
+    class DeletePlayer {
+
+        private static String VALID_PLAYER_JSON_BODY = """
+                {
+                "name": "Richard Johanson",
+                        "age": 33,
+                        "position": "STRIKER",
+                        "dateOfBirth": "1991-06-20",
+                        "countryOfBirth": "GERMANY"
+                  }
+                  """;
+
+        @ParameterizedTest
+        @ValueSource(strings = {"", " "})
+        void testEmptyPlayerIdInPath(String input) {
+            RestAssured
+                    .given()
+                    .baseUri("http://localhost:8080")
+                    .header(new Header("Content-Type", APPLICATION_JSON))
+                    .put("/api/players/".concat(input))
+                    .then()
+                    .statusCode(400)
+                    .body(stringContainsInOrder("required playerId in path is null"));
+        }
+
+        @Test
+        void testMissingIdInPath() {
+            RestAssured
+                    .given()
+                    .baseUri("http://localhost:8080")
+                    .header(new Header("Content-Type", APPLICATION_JSON))
+                    .put("/api/players")
+                    .then()
+                    .statusCode(400)
+                    .body(stringContainsInOrder("required playerId in path is null"));
+        }
+
+        @Test
+        void testDeletionOfNotExistingPlayer() {
+            RestAssured
+                    .given()
+                    .baseUri("http://localhost:8080")
+                    .delete("/api/players/00000000000")
+                    .then()
+                    .statusCode(400)
+                    .body(stringContainsInOrder("failed to delete player"));
+        }
+
+        @Test
+        void testDeletionPlayer() throws JsonProcessingException {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonResponse = objectMapper.readTree(RestAssured.given()
+                    .baseUri("http://localhost:8080")
+                    .header(new Header("Content-Type", "application/json; charset=UTF-8"))
+                    .body(VALID_PLAYER_JSON_BODY)
+                    .post("/api/players")
+                    .asString());
+
+            String id = jsonResponse.get("id").asText();
+
+            RestAssured
+                    .given()
+                    .baseUri("http://localhost:8080")
+                    .delete(String.format("/api/players/%s",id))
+                    .then()
+                    .statusCode(200);
+        }
+    }
 }

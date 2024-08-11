@@ -63,7 +63,7 @@ public class WebUtils {
         }
     }
 
-    public static void handleInvalidPath(HttpServletRequest request, HttpServletResponse response, String validPath) throws IOException {
+    public static void handleInvalidPath(HttpServletRequest request, String validPath) throws IOException {
         if (!Pattern.matches(wrapIntoRegex(validPath), request.getRequestURI())) {
             throw new IllegalStateException(format("path used: %s is not appropriate!", request.getRequestURI()));
         }
