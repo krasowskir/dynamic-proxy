@@ -27,3 +27,4 @@
   - mit jetty-maven plugin gibt es das Problem nicht!
 - wie startet man die Application in einem anderen thread, separat vom maven lifecycle?
   - exec-maven-plugin führt alles nur in einer VM aus. -> forkMode oder jetty plugin
+- wie schaltet man cache für integrationsTests aus?

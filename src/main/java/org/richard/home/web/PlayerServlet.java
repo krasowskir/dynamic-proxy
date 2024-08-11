@@ -26,8 +26,6 @@ import static org.richard.home.web.WebConstants.*;
 import static org.richard.home.web.WebUtils.*;
 
 // ToDo: könnte mit funktionaler Programmierung implementiert werden!
-// ToDo: schreibe Tests für web layer!!!
-
 public class PlayerServlet extends HttpServlet {
 
     private static final String PLAYERS_REQUEST_PATH = "/api/players";
@@ -41,13 +39,12 @@ public class PlayerServlet extends HttpServlet {
     @Override
     public void init() {
         log.info("init method without args was called...");
-
-//        this.playerService = Objects.requireNonNull(ContextLoaderListener.getCurrentWebApplicationContext()).getBean(PlayerService.class);
         this.playerService = StaticApplicationConfiguration.PLAYER_SERVICE_INSTANCE;
         this.objectMapper = StaticApplicationConfiguration.OBJECT_MAPPER;
         this.objectMapper.registerModule(new JavaTimeModule());
     }
 
+    // ToDo: getPlayer by age is missing!
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Player foundPlayer = null;
@@ -76,15 +73,15 @@ public class PlayerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        handleBadContentType(req, resp, log);
         PlayerDTO playerDTO = null;
         try {
+            handleBadContentType(req, log);
             playerDTO = objectMapper.readValue(req.getInputStream(), PlayerDTO.class);
             validateAndHandleInvalid(playerDTO);
             var player = PlayerMapper.fromWebLayerTo(playerDTO);
             player = playerService.savePlayer(player);
             handleResponse(resp, SC_CREATED, objectMapper.writeValueAsString(player));
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | DatabindException e) {
             log.warn("invalid input provided for saving player: {}", playerDTO);
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
         }
@@ -92,9 +89,9 @@ public class PlayerServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        handleBadContentType(req, resp, log);
         String playerId = null;
         try {
+            handleBadContentType(req, log);
             playerId = extractPlayerId(req, PLAYERS_REQUEST_PATH);
             Objects.requireNonNull(playerId.trim(), "required playerId in path is null!");
             var playerDTO = objectMapper.readValue(req.getInputStream(), PlayerDTO.class);
@@ -109,9 +106,9 @@ public class PlayerServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        handleInvalidPath(req, resp, PLAYERS_REQUEST_PATH);
         String playerId = null;
         try {
+            handleInvalidPath(req, resp, PLAYERS_REQUEST_PATH);
             playerId = req.getRequestURI().split(PLAYERS_REQUEST_PATH)[1];
             if (playerService.deletePlayerById(playerId)) {
                 handleResponse(resp, SC_OK, format("player: %s deleted successfully!", playerId));

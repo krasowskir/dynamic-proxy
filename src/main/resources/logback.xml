@@ -19,6 +19,9 @@
         <appender-ref ref="richOut"/>
     </logger>
 
+    <logger name="org.hibernate" level="info">
+        <appender-ref ref="richOut" />
+    </logger>
     <root level="INFO" additivity="false">
         <appender-ref ref="richOut"/>
     </root>

@@ -7,6 +7,7 @@ import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.PersistenceUnitTransactionType;
+import org.hibernate.cfg.PersistenceSettings;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.richard.home.infrastructure.PlayerValidationService;
 import org.slf4j.Logger;
@@ -98,11 +99,12 @@ public class GeneralConfiguration {
         jpaProps.put("jakarta.persistence.nonJtaDataSource", persistenceUnitInfo.getNonJtaDataSource());
 
         //cache
-//        jpaProps.put("hibernate.cache.use_second_level_cache", "true");
-//        jpaProps.put("hibernate.javax.cache.provider", "org.ehcache.jsr107.EhcacheCachingProvider");
-//        jpaProps.put("hibernate.cache.region.factory_class", "jcache");
-////        jpaProps.put("javax.persistence.sharedCache.mode","all");
+        jpaProps.put("hibernate.cache.use_second_level_cache", "false");
 //        jpaProps.put("hibernate.cache.use_query_cache", "true");
+//        jpaProps.put("hibernate.cache.region.factory_class", "org.redisson.hibernate.RedissonRegionFactory");
+//        jpaProps.put("hibernate.cache.redisson.config", "redisson.yaml");
+//        jpaProps.put("hibernate.cache.default_cache_concurrency_strategy", "read-write");
+//        jpaProps.put("jakarta.persistence.sharedCache.mode","ALL");
 
         return new HibernatePersistenceProvider().createContainerEntityManagerFactory(myPersistenceUnitInfo(), jpaProps);
     }

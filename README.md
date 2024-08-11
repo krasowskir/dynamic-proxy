@@ -1,8 +1,14 @@
 # Server
 
+build the tests:
+```
+mvn clean verify -Dgroups=PostPlayers
+```
+
 run app:
 
 ```
+export MAVEN_OPTS="--enable-preview -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 mvn exec:java -Dexec.mainClass=org.richard.home.App
 mvn exec:exec -Dexec.executable=java -Dexec.args="-cp %classpath org.richard.home.App"
 ```

@@ -51,10 +51,10 @@ public class WebUtils {
         }
     }
 
-    public static void handleBadContentType(HttpServletRequest request, HttpServletResponse response, Logger log) throws IOException {
-        if (!request.getContentType().equals(HEADER_VALUE_APPLICATION_JSON)) {
+    public static void handleBadContentType(HttpServletRequest request, Logger log) {
+        if (!stripCharset(request.getContentType()).equals(HEADER_VALUE_APPLICATION_JSON)) {
             log.error("tried to call uri: {} with invalid content type: {}", request.getRequestURI(), request.getContentType());
-            handleResponse(response, SC_BAD_REQUEST, format("invalid content type used: %s", request.getContentType()));
+            throw new IllegalArgumentException(format("tried to call uri: %s with invalid content type: %s", request.getRequestURI(), request.getContentType()));
         }
     }
 
