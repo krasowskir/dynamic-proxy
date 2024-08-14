@@ -1,13 +1,21 @@
 package org.richard.home.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 public class AddressDTO {
 
+    @JsonProperty("city")
     private String city;
+    @JsonProperty("street")
     private String street;
+    @JsonProperty("plz")
     private String plz;
 
+    @JsonProperty("houseNumber")
     private int houseNumber;
 
+    @JsonProperty("country")
     private Country country;
 
     public AddressDTO() {

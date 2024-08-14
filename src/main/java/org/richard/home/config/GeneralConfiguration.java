@@ -17,8 +17,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Properties;
 
@@ -36,11 +34,8 @@ public class GeneralConfiguration {
     static {
         Properties props = new Properties();
         try {
-            props.load(
-                    Files.newInputStream(
-                            Path.of(
-                                    GeneralConfiguration.class.getClassLoader().getResource("application.properties").toURI())));
-        } catch (IOException | URISyntaxException e) {
+            props.load(GeneralConfiguration.class.getClassLoader().getResourceAsStream("application.properties"));
+        } catch (IOException e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);
         }

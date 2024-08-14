@@ -1,6 +1,7 @@
 package org.richard.home.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -19,6 +20,8 @@ public class TeamDto {
     @NotBlank(message = "owner cannot be null or empty")
     private String owner;
     private String tla;
+
+    @JsonProperty("address")
     @ValidAddress(message = "address is not valid")
     private AddressDTO address;
     private String phone;
@@ -29,10 +32,8 @@ public class TeamDto {
     @NotBlank(message = "leagueId cannot be null or empty")
     private String leagueId;
 
-
     public TeamDto() {
     }
-
 
     public TeamDto(String name, int budget, String logoUrl, String owner, String tla, AddressDTO address, String phone, String website, String email, String venue, int wyId, String leagueId) {
         this.name = name;
@@ -41,21 +42,6 @@ public class TeamDto {
         this.owner = owner;
         this.tla = tla;
         this.address = address;
-        this.phone = phone;
-        this.website = website;
-        this.email = email;
-        this.venue = venue;
-        this.wyId = wyId;
-        this.leagueId = leagueId;
-    }
-
-    public TeamDto(String name, int budget, String logoUrl, String owner, String tla, String address, String phone, String website, String email, String venue, int wyId, String leagueId) throws JsonProcessingException {
-        this.name = name;
-        this.budget = budget;
-        this.logo = logoUrl;
-        this.owner = owner;
-        this.tla = tla;
-        this.address = StaticApplicationConfiguration.OBJECT_MAPPER.readValue(address, AddressDTO.class);
         this.phone = phone;
         this.website = website;
         this.email = email;

@@ -1,17 +1,17 @@
 package org.richard.home.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.richard.home.domain.Team;
 import org.richard.home.infrastructure.exception.LeagueDoesNotExistException;
 import org.richard.home.service.TeamService;
-import org.richard.home.web.dto.AddressDTO;
 import org.richard.home.web.dto.TeamDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,67 +20,34 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static jakarta.servlet.http.HttpServletResponse.SC_OK;
+import static jakarta.servlet.http.HttpServletResponse.*;
 import static java.lang.String.format;
-import static java.util.Optional.ofNullable;
-import static org.richard.home.config.StaticApplicationConfiguration.*;
+import static org.richard.home.config.StaticApplicationConfiguration.OBJECT_MAPPER;
+import static org.richard.home.config.StaticApplicationConfiguration.TEAM_SERVICE_INSTANCE;
 import static org.richard.home.web.WebConstants.HEADER_VALUE_APPLICATION_JSON;
 import static org.richard.home.web.WebConstants.HEADER_VALUE_FORM_URL_ENCODED;
+import static org.richard.home.web.WebUtils.*;
 
 //@WebServlet(urlPatterns = "/teeams")
 public class TeamServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(TeamServlet.class);
     private static final String TEAMS_PATH = "/api/teams";
-    private static Pattern TEAM_PATTERN = Pattern.compile(TEAMS_PATH + "/id/");
     private TeamService teamService;
     private ObjectMapper objectMapper;
 
-    private static void addDefaultHeader(HttpServletResponse response) {
-        response.addHeader("Content-Type", "application/json");
-        response.addHeader("X-Powered-By", "Jetty 11");
-    }
-
-    private static void handleResponse(HttpServletResponse resp, int scBadRequest, String e) throws IOException {
-        resp.setStatus(scBadRequest);
-        addDefaultHeader(resp);
-        resp.getWriter().println(e);
-    }
-
-    private static void validateAndHandleInvalid(TeamDto teamDto) {
-        var errors = VALIDATOR_FACTORY.getValidator().validate(teamDto);
-        if (!errors.isEmpty()) {
-            var errorMessagesCombined = errors.stream()
-                    .map(error -> {
-                        log.error("validation error: {}", error.getMessage());
-                        return error.getMessage();
-                    }).collect(Collectors.joining(";\n"));
-            throw new IllegalArgumentException(errorMessagesCombined);
-        }
-    }
-
-    private static void handleInvalidPath(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (!TEAM_PATTERN.matcher(request.getRequestURI()).matches()) {
-            handleResponse(response, SC_BAD_REQUEST, format("path used: %s is not appropriate!", request.getRequestURI()));
-        }
-    }
-
-    private static void handleInvalidContentType(HttpServletRequest request, HttpServletResponse response, String validContentType) throws IOException {
-        if (!request.getContentType().equals(validContentType)) {
-            handleResponse(response, SC_BAD_REQUEST, format("content type used: %s is not appropriate!", request.getContentType()));
-        }
-    }
-
     private static String extractTeamId(HttpServletRequest req, String fromPath) {
-        return req.getRequestURI().split(fromPath)[1];
+        return Pattern.compile(fromPath.concat(".+")).matcher(req.getRequestURI()).matches() ?
+                Optional.of(req.getRequestURI().split(fromPath)[1].substring(0))
+                        .stream()
+                        .takeWhile(elem -> !elem.isBlank())
+                        .findFirst()
+                        .orElse(null) : null;
     }
 
     @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
+    public void init(ServletConfig config) {
         this.objectMapper = OBJECT_MAPPER;
         this.objectMapper.registerModule(new JavaTimeModule());
         this.teamService = TEAM_SERVICE_INSTANCE;
@@ -91,12 +58,18 @@ public class TeamServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         log.info("doGet method was called...");
         try {
-            final String teamId = Objects.requireNonNull(req.getParameter("id"), "request parameter id was null!");
-            Team team = Optional.ofNullable(teamService.findTeamById(teamId))
+            final Integer teamId = Integer.valueOf(
+                    Objects.requireNonNull(
+                            req.getParameter("id"), "request parameter id was null!"));
+            Team team = Optional.ofNullable(teamService.findTeamById(teamId.toString()))
                     .orElseThrow(() -> new NoResultException(format("team with id: %s could not be found!", teamId)));
             handleResponse(resp, SC_OK, objectMapper.writeValueAsString(team));
-        } catch (NullPointerException | NoResultException e) {
+        } catch (NullPointerException | NumberFormatException e) {
+            log.warn(e.getMessage());
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
+        } catch (NoResultException e) {
+            log.warn(e.getMessage());
+            handleResponse(resp, SC_NOT_FOUND, e.getMessage());
         }
 
     }
@@ -108,33 +81,35 @@ public class TeamServlet extends HttpServlet {
             TeamDto teamDto = mapTeamDTO(req);
             validateAndHandleInvalid(teamDto);
             var createdTeam = this.teamService.createTeam(teamDto);
-            resp.setStatus(HttpServletResponse.SC_CREATED);
-            addDefaultHeader(resp);
-            resp.getWriter().println(format("team successfully created. TeamId: %d", createdTeam.getId()));
+            handleResponse(resp, SC_CREATED, format("team successfully created. TeamId: %d", createdTeam.getId()));
         } catch (LeagueDoesNotExistException e) {
             handleResponse(resp, SC_BAD_REQUEST, format("league specified does not exist! %s", e.getMessage()));
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | JsonProcessingException e) {
+            log.warn("invalid input provided!");
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
         }
 
-
     }
-
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            handleInvalidPath(req, resp);
-            handleInvalidContentType(req, resp, HEADER_VALUE_APPLICATION_JSON);
-            String teamId = extractTeamId(req, TEAMS_PATH + "/id/");
-            TeamDto teamDto = objectMapper.readValue(req.getInputStream(), TeamDto.class);
+            handleBadContentType(req, HEADER_VALUE_APPLICATION_JSON);
+            String teamId = Objects.requireNonNull(
+                    extractTeamId(req, TEAMS_PATH + "/id/"), "teamId was null");
+            TeamDto teamDto = objectMapper.treeToValue(objectMapper.readTree(req.getInputStream()), TeamDto.class);
             validateAndHandleInvalid(teamDto);
             var updatedTeam = teamService.updateTeam(teamId, teamDto);
             handleResponse(resp, SC_OK, objectMapper.writeValueAsString(updatedTeam));
         } catch (LeagueDoesNotExistException e) {
             log.error("request contained leagueId which could not be found!");
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
-            throw new RuntimeException(e);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            log.warn(e.getMessage());
+            handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
+        } catch (RollbackException e) {
+            log.warn("could not update the team successfully!");
+            handleResponse(resp, SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -144,9 +119,9 @@ public class TeamServlet extends HttpServlet {
             String teamId = Objects.requireNonNull(req.getParameter("id"),
                     "request parameter id: %s cannot be null!");
             if (teamService.deleteTeam(teamId)) {
-                handleSuccessfulResponse(teamId, resp, "deleting of team: %s was successful!");
+                handleResponse(resp, SC_OK, String.format("deleting of team: %s was successful!", teamId));
             } else {
-                handleFailure(teamId, resp, "deleting of team: %s was NOT successful!");
+                handleResponse(resp, SC_BAD_REQUEST, String.format("deleting of team: %s was NOT successful!"));
             }
         } catch (NullPointerException e) {
             log.error("request to delete team with id: {} failed!", req.getParameter("id"));
@@ -154,44 +129,23 @@ public class TeamServlet extends HttpServlet {
         }
     }
 
-    // ToDo: handle Address and AddressDTO properly!
-    private TeamDto mapToTeamDto(HttpServletRequest request) {
-        return new TeamDto(
-                request.getParameter("name"),
-                Integer.valueOf(ofNullable(request.getParameter("budget")).orElseGet(() -> "0")),
-                request.getParameter("logoUrl"),
-                request.getParameter("owner"),
-                request.getParameter("tla"),
-                (AddressDTO) null,
-//                objectMapper.readValue(request.getParameter("address"), AddressDTO.class),
-                request.getParameter("phone"),
-                request.getParameter("website"),
-                request.getParameter("email"),
-                request.getParameter("venue"),
-                Integer.valueOf(ofNullable(request.getParameter("wyId")).orElseGet(() -> "0")),
-                request.getParameter("leagueId"));
-
-    }
-
-    private void handleSuccessfulResponse(String teamId, HttpServletResponse response, String message) throws IOException {
-        response.setStatus(SC_OK);
-        addDefaultHeader(response);
-        response.getWriter().println(format(message, teamId));
-
-    }
-
-    private void handleFailure(String teamId, HttpServletResponse response, String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        addDefaultHeader(response);
-        response.getWriter().println(format(message, teamId));
-    }
 
     private TeamDto mapTeamDTO(HttpServletRequest req) throws IOException {
-        TeamDto teamDto = null;
-        switch (req.getContentType()) {
-            case HEADER_VALUE_FORM_URL_ENCODED -> teamDto = mapToTeamDto(req);
-            case HEADER_VALUE_APPLICATION_JSON -> teamDto = objectMapper.readValue(req.getInputStream(), TeamDto.class);
+        switch (stripCharset(req.getContentType())) {
+            case HEADER_VALUE_FORM_URL_ENCODED -> {
+                return null;
+            }
+            case HEADER_VALUE_APPLICATION_JSON -> {
+                try (var input = req.getInputStream()) {
+                    return objectMapper.treeToValue(objectMapper.readTree(input), TeamDto.class);
+                } catch (IllegalArgumentException | JsonProcessingException e) {
+                    log.warn("could not read and parse team json!");
+                    throw e;
+                }
+            }
+            default -> {
+                return null;
+            }
         }
-        return teamDto;
     }
 }

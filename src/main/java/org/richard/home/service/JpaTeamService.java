@@ -1,14 +1,16 @@
 package org.richard.home.service;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.RollbackException;
 import org.richard.home.domain.League;
 import org.richard.home.domain.Team;
 import org.richard.home.infrastructure.exception.LeagueDoesNotExistException;
 import org.richard.home.web.dto.TeamDto;
 import org.richard.home.web.mapper.TeamMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -18,14 +20,15 @@ public class JpaTeamService implements TeamService {
     private EntityManagerFactory entityManagerFactory;
     private TeamMapper teamMapper;
 
+    private static Logger log = LoggerFactory.getLogger(JpaTeamService.class);
+
     public JpaTeamService(EntityManagerFactory entityManagerFactory, TeamMapper teamMapper) {
         this.entityManagerFactory = entityManagerFactory;
         this.teamMapper = teamMapper;
     }
 
-    private static void updateTeamAttributes(TeamDto toTeamDTO, EntityManager entityManager, Team foundTeam) {
-        if (isNotNullOrEmpty(toTeamDTO.getLeagueId()))
-            foundTeam.setLeague(entityManager.find(League.class, toTeamDTO.getLeagueId()));
+    private static void updateTeamAttributes(TeamDto toTeamDTO, Team foundTeam, League foundLeague) {
+        foundTeam.setLeague(foundLeague);
         if (toTeamDTO.getWyId() != 0) foundTeam.setWyId(toTeamDTO.getWyId());
         if (isNotNullOrEmpty(toTeamDTO.getWebsite())) foundTeam.setWebsite(toTeamDTO.getWebsite());
         if (isNotNullOrEmpty(toTeamDTO.getTla())) foundTeam.setTla(toTeamDTO.getTla());
@@ -34,8 +37,9 @@ public class JpaTeamService implements TeamService {
         if (isNotNullOrEmpty(toTeamDTO.getLogo())) foundTeam.setLogo(toTeamDTO.getLogo());
         if (isNotNullOrEmpty(toTeamDTO.getName())) foundTeam.setName(toTeamDTO.getName());
         if (isNotNullOrEmpty(toTeamDTO.getEmail())) foundTeam.setEmail(toTeamDTO.getEmail());
-        if (isNotNullOrEmpty(toTeamDTO.getAddress().toString()))
+        if (isNotNullOrEmpty(toTeamDTO.getAddress().toString())) {
             foundTeam.setAddress(toTeamDTO.getAddress().toString());
+        }
     }
 
     public static boolean isNotNullOrEmpty(String value) {
@@ -44,14 +48,22 @@ public class JpaTeamService implements TeamService {
 
     @Override
     public Team createTeam(TeamDto fromTeam) throws LeagueDoesNotExistException {
+        EntityTransaction transaction = null;
         Team team = teamMapper.mapToTeam(fromTeam);
         try (var entityManager = entityManagerFactory.createEntityManager();) {
-            EntityTransaction transaction = entityManager.getTransaction();
+            transaction = entityManager.getTransaction();
             transaction.begin();
-            var foundLeague = Optional.ofNullable(entityManager.find(League.class, fromTeam.getLeagueId())).orElseThrow(() -> new LeagueDoesNotExistException("leaggue id: " + fromTeam.getLeagueId()));
+            var foundLeague = Optional.ofNullable(
+                            entityManager.find(League.class, fromTeam.getLeagueId())
+                    )
+                    .orElseThrow(() -> new LeagueDoesNotExistException("league id: " + fromTeam.getLeagueId()));
             team.setLeague(foundLeague);
             entityManager.persist(team);
             transaction.commit();
+        } catch (LeagueDoesNotExistException e) {
+            log.error("league could not be found! leagueId: {}", fromTeam.getLeagueId());
+            transaction.rollback();
+            throw e;
         }
         return team;
     }
@@ -60,13 +72,15 @@ public class JpaTeamService implements TeamService {
     @Override
     public boolean deleteTeam(String id) {
         Objects.requireNonNull(id.trim());
+        EntityTransaction transaction = null;
         try (var entityManager = entityManagerFactory.createEntityManager()) {
-            EntityTransaction transaction = entityManager.getTransaction();
+            transaction = entityManager.getTransaction();
             transaction.begin();
             entityManager.remove(entityManager.find(Team.class, id));
             transaction.commit();
             return true;
         } catch (Exception e) {
+            transaction.rollback();
             return false;
         }
     }
@@ -81,15 +95,37 @@ public class JpaTeamService implements TeamService {
 
     // ToDo: rollback der Transaktion fehlt!
     @Override
-    public Team updateTeam(String teamId, TeamDto toTeamDTO) {
+    public Team updateTeam(String teamId, TeamDto toTeamDTO) throws LeagueDoesNotExistException {
+        EntityTransaction transaction = null;
         try (var entityManager = entityManagerFactory.createEntityManager()) {
-            EntityTransaction transaction = entityManager.getTransaction();
+            transaction = entityManager.getTransaction();
             transaction.begin();
             var foundTeam = entityManager.find(Team.class, teamId);
-            updateTeamAttributes(toTeamDTO, entityManager, foundTeam);
+            handleNotExistingLeague(toTeamDTO.getLeagueId());
+            var foundLeague = Objects.requireNonNull(
+                    entityManager.find(League.class, toTeamDTO.getLeagueId()),
+                    String.format("league with id: %s could not be found!", toTeamDTO.getLeagueId())
+            );
+            updateTeamAttributes(toTeamDTO, foundTeam, foundLeague);
             var updated = entityManager.merge(foundTeam);
             transaction.commit();
             return updated;
+        } catch (NullPointerException e) {
+            log.warn("league could not be found with id: {}", toTeamDTO.getLeagueId());
+            transaction.rollback();
+            throw new LeagueDoesNotExistException(
+                    String.format("league could not be found with id: %s!",
+                            toTeamDTO.getLeagueId()));
+        } catch (RollbackException | IllegalArgumentException e) {
+            log.error("transaction aborted! Will roll back!");
+            transaction.rollback();
+            throw e;
+        }
+    }
+
+    private void handleNotExistingLeague(String leagueId) {
+        if (!isNotNullOrEmpty(leagueId)) {
+            throw new NullPointerException("leagueId is null or empty!");
         }
     }
 }

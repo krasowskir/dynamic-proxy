@@ -178,6 +178,38 @@
 
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>fat-jar</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.6.0</version>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>org.richard.home.App</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>jar-with-dependencies</descriptorRefs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-big-jar</id>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -262,9 +294,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-<!--                <configuration>-->
-<!--                        <groups>GetPlayers,PostPlayers</groups>-->
-<!--                </configuration>-->
+                <!--                <configuration>-->
+                <!--                        <groups>GetPlayers,PostPlayers</groups>-->
+                <!--                </configuration>-->
                 <executions>
                     <execution>
                         <id>my-integration-tests</id>

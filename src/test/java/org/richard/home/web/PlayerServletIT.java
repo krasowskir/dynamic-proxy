@@ -3,6 +3,7 @@ package org.richard.home.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.RestAssured;
 import io.restassured.http.Header;
 import org.junit.jupiter.api.Nested;
@@ -22,6 +23,7 @@ import static org.hamcrest.Matchers.*;
 
 // ToDo: startet aktuell alles. Webschicht sollte isoliert vertestet werden!
 class PlayerServletIT {
+    private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private static final String FORM_URL_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded; charset=UTF-8";
     private static final String APPLICATION_JSON = "application/json";
     private static final String INVALID_CONTENT_TYPE = "invalid-contentType";
@@ -170,6 +172,15 @@ class PlayerServletIT {
     @Tag("PutPlayers")
     @Nested
     class PutPlayers {
+        private static String VALID_PLAYER_JSON_BODY = """
+                {
+                "name": "Richard Johanson",
+                        "age": 33,
+                        "position": "STRIKER",
+                        "dateOfBirth": "1991-06-20",
+                        "countryOfBirth": "GERMANY"
+                  }
+                  """;
 
         @ParameterizedTest
         @ValueSource(strings = {INVALID_CONTENT_TYPE, FORM_URL_ENCODED_CONTENT_TYPE})
@@ -211,16 +222,28 @@ class PlayerServletIT {
         }
 
         @Test
-        void testUpdatePlayerHppyPath() {
+        void testUpdatePlayerHappyPath() throws JsonProcessingException {
+            String playerId = extractPlayerId(RestAssured.given()
+                    .baseUri("http://localhost:8080")
+                    .header(new Header("Content-Type", "application/json; charset=UTF-8"))
+                    .body(VALID_PLAYER_JSON_BODY)
+                    .post("/api/players")
+                    .asString());
+
             RestAssured.given()
                     .baseUri("http://localhost:8080")
                     .header(new Header("Content-Type", "application/json; charset=UTF-8"))
                     .body("{\"name\":\"Richard Johanson\",\"age\":33,\"position\":\"STRIKER\",\"dateOfBirth\":\"1991-06-21\",\"countryOfBirth\":\"SENEGAL\"}")
-                    .put("/api/players/177327")
+                    .put(String.format("/api/players/%s", playerId))
                     .then()
                     .statusCode(200)
                     .and()
-                    .body(stringContainsInOrder("{\"id\":177327,\"name\":\"Richard Johanson\",\"alter\":33,\"position\":\"STRIKER\",\"dateOfBirth\":[1991,6,21],\"countryOfBirth\":\"SENEGAL\"}"));
+                    .body(stringContainsInOrder(String.format("{\"id\":%s,\"name\":\"Richard Johanson\",\"alter\":33,\"position\":\"STRIKER\",\"dateOfBirth\":[1991,6,21],\"countryOfBirth\":\"SENEGAL\"}", playerId)));
+        }
+
+        private String extractPlayerId(String input) throws JsonProcessingException {
+            JsonNode jsonTree = objectMapper.readTree(input);
+            return jsonTree.get("id").asText();
         }
     }
 
@@ -289,7 +312,7 @@ class PlayerServletIT {
             RestAssured
                     .given()
                     .baseUri("http://localhost:8080")
-                    .delete(String.format("/api/players/%s",id))
+                    .delete(String.format("/api/players/%s", id))
                     .then()
                     .statusCode(200);
         }

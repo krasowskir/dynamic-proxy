@@ -2,7 +2,6 @@ package org.richard.home.web;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.richard.home.web.dto.PlayerDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +45,8 @@ public class WebUtils {
         resp.getWriter().println(e);
     }
 
-    public static void validateAndHandleInvalid(PlayerDTO playerDTO) {
-        var errors = VALIDATOR_FACTORY.getValidator().validate(playerDTO);
+    public static void validateAndHandleInvalid(Object genericDTO) {
+        var errors = VALIDATOR_FACTORY.getValidator().validate(genericDTO);
         if (!errors.isEmpty()) {
             var errorMessagesCombined = errors.stream()
                     .map(error -> error.getMessage())
