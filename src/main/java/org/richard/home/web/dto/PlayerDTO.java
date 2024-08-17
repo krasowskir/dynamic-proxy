@@ -1,10 +1,12 @@
 package org.richard.home.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PlayerDTO {
 
     @NotBlank(message = "name cannot be null or empty")

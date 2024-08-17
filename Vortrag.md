@@ -11,6 +11,7 @@ Vortrag
     - wann werden sie dahin aufgenommen
     - was ist der Sinn davon
 - hibernate method validator
+- JMX monitoring
 
 Probleme: (Mapping, Validierung, Url Kodierung)
 =========

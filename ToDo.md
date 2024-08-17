@@ -13,6 +13,7 @@
 - Buffering um Performance zu steigern ausprobieren
 - WAF ausprobieren
 - OpenIdConnect & oauth2 integration implementieren
+- Adresse als separate Entity herausarbeiten
 
 
 ## Erledigt:
@@ -22,6 +23,8 @@
 - embedded jetty ohne artifakt
 - jetty 11 und servlet 5 specification
 - Redis & hibernate cache integration
+- wie stoppt man maven-exec prozesse?
+- wie startet man die Application in einem anderen thread, separat vom maven lifecycle?
 
 
 
@@ -31,3 +34,10 @@
 - wie startet man die Application in einem anderen thread, separat vom maven lifecycle?
   - exec-maven-plugin führt alles nur in einer VM aus. -> forkMode oder jetty plugin
 - wie schaltet man cache für integrationsTests aus?
+
+
+## Features
+- Umzug eines Players
+- Wechsel eines Players zu anderem Team
+- Aufsteigen einer Mannschaft
+- Trainererstellung, Trainerwechsel

@@ -96,7 +96,7 @@ public class JpaPlayerService implements PlayerService {
             entityManager.persist(toSave);
             transaction.commit();
             return toSave;
-        } catch (PersistenceException | IllegalStateException e){
+        } catch (PersistenceException | IllegalStateException e) {
             log.error("error while saving player: {}", toSave, e);
             transaction.rollback();
             throw e;
@@ -123,7 +123,7 @@ public class JpaPlayerService implements PlayerService {
             foundPlayer = updatePlayerAttributes(toBe, foundPlayer);
             transaction.commit();
             return foundPlayer;
-        } catch (PersistenceException | IllegalStateException e){
+        } catch (PersistenceException | IllegalStateException e) {
             log.error("error while saving player: {} with id: {}", toBe, id, e);
             transaction.rollback();
             throw e;
@@ -142,10 +142,14 @@ public class JpaPlayerService implements PlayerService {
             try (var entityManager = entityManagerFactory.createEntityManager()) {
                 transaction = entityManager.getTransaction();
                 transaction.begin();
-                entityManager.remove(Optional.ofNullable(entityManager.find(Player.class, playerId)).orElseThrow(() -> new NoResultException("no player found with id " + playerId)));
+                entityManager.remove(
+                        Optional.ofNullable(
+                                        entityManager.find(Player.class, playerId))
+                                .orElseThrow(() -> new NoResultException("no player found with id " + playerId))
+                );
                 transaction.commit();
                 return true;
-            } catch (NoResultException e){
+            } catch (NoResultException e) {
                 log.error("could not delete player: {} as it could not be found!: ", playerId);
                 transaction.rollback();
                 throw e;

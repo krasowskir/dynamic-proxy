@@ -1,5 +1,6 @@
 package org.richard.home;
 
+import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.ServletsConfiguration;
@@ -14,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+
+import java.lang.management.ManagementFactory;
 
 public class App {
     private static final Logger log = LoggerFactory.getLogger(App.class);
@@ -32,9 +35,11 @@ public class App {
 
     public void startServer() throws Exception {
         Server server = new Server();
+        MBeanContainer mBeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(8080);
         server.addConnector(connector);
+        server.addBean(mBeanContainer);
 
         // Servlet web application context
         WebAppContext servletContext = new WebAppContext();

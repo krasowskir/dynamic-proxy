@@ -90,6 +90,11 @@
             <artifactId>jetty-webapp</artifactId>
             <version>11.0.20</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-jmx</artifactId>
+            <version>11.0.20</version>
+        </dependency>
 
         <!--      hibernate validation-->
         <dependency>
