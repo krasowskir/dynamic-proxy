@@ -1,22 +1,23 @@
 package org.richard.home.domain;
 
 
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity
+@Table(name = "addresses")
 public class Address {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AddressSequenceGenerator")
+    @SequenceGenerator(name = "AddressSequenceGenerator", sequenceName = "addresses_id_seq", allocationSize = 1)
     private int id;
     private String city;
     private String street;
     private String plz;
 
-    @Embedded
+    @Enumerated(value = EnumType.STRING)
     private Country country;
 
     public Address(String city, String street, String plz, Country country) {

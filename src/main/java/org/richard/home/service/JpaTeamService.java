@@ -7,6 +7,7 @@ import jakarta.persistence.RollbackException;
 import org.richard.home.domain.League;
 import org.richard.home.domain.Team;
 import org.richard.home.infrastructure.exception.LeagueDoesNotExistException;
+import org.richard.home.repository.TeamRepository;
 import org.richard.home.web.dto.TeamDto;
 import org.richard.home.web.mapper.TeamMapper;
 import org.slf4j.Logger;
@@ -18,13 +19,15 @@ import java.util.Optional;
 public class JpaTeamService implements TeamService {
 
     private EntityManagerFactory entityManagerFactory;
+    private TeamRepository teamRepository;
     private TeamMapper teamMapper;
 
     private static Logger log = LoggerFactory.getLogger(JpaTeamService.class);
 
-    public JpaTeamService(EntityManagerFactory entityManagerFactory, TeamMapper teamMapper) {
+    public JpaTeamService(EntityManagerFactory entityManagerFactory, TeamMapper teamMapper, TeamRepository teamRepository) {
         this.entityManagerFactory = entityManagerFactory;
         this.teamMapper = teamMapper;
+        this.teamRepository = teamRepository;
     }
 
     private static void updateTeamAttributes(TeamDto toTeamDTO, Team foundTeam, League foundLeague) {
@@ -49,7 +52,7 @@ public class JpaTeamService implements TeamService {
     @Override
     public Team createTeam(TeamDto fromTeam) throws LeagueDoesNotExistException {
         EntityTransaction transaction = null;
-        Team team = teamMapper.mapToTeam(fromTeam);
+        Team team = teamMapper.mapFromDomain(fromTeam);
         try (var entityManager = entityManagerFactory.createEntityManager();) {
             transaction = entityManager.getTransaction();
             transaction.begin();
@@ -61,7 +64,7 @@ public class JpaTeamService implements TeamService {
             entityManager.persist(team);
             transaction.commit();
         } catch (LeagueDoesNotExistException e) {
-            log.error("league could not be found! leagueId: {}", fromTeam.getLeagueId());
+            log.error("Creation not successful! League could not be found! leagueId: {}", fromTeam.getLeagueId());
             transaction.rollback();
             throw e;
         }
@@ -121,6 +124,17 @@ public class JpaTeamService implements TeamService {
             transaction.rollback();
             throw e;
         }
+    }
+
+    @Override
+    public Team getCurrentTeamOfPlayer(String playerId) {
+        var validPlayerId = Optional.ofNullable(playerId)
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(elem -> !elem.isEmpty())
+                .orElseThrow(() -> new NullPointerException("playerId was null or empty!"));
+
+        return teamRepository.getTeamOfPlayer(validPlayerId);
     }
 
     private void handleNotExistingLeague(String leagueId) {

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import org.richard.home.domain.Address;
 import org.richard.home.domain.Player;
+import org.richard.home.domain.Team;
 import org.richard.home.repository.PlayerRepository;
 import org.richard.home.web.dto.PlayerDTO;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.richard.home.service.JpaTeamService.isNotNullOrEmpty;
@@ -53,7 +55,7 @@ public class JpaPlayerService implements PlayerService {
         try (var entityManager = entityManagerFactory.createEntityManager()) {
             return playerRepository.getPlayer(entityManager, name);
         } catch (NoResultException e) {
-            log.error("no player found with the specified name: {}", name);
+            log.warn("no player found with the specified name: {}", name);
             throw e;
         }
     }
@@ -64,7 +66,7 @@ public class JpaPlayerService implements PlayerService {
             return Optional.ofNullable(entityManager.find(Player.class, id))
                     .orElseThrow(() -> new NoResultException("no player found with id: " + id));
         } catch (NoResultException e) {
-            log.error(e.getMessage());
+            log.warn(e.getMessage());
             throw e;
         }
     }
@@ -162,5 +164,57 @@ public class JpaPlayerService implements PlayerService {
             log.error("playerId {} is null or empty", playerId);
         }
         return false;
+    }
+
+    @Override
+    public Map.Entry<Player, Team> updateTeamOfPlayer(String playerId, String newTeamId) {
+        EntityTransaction transaction = null;
+        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            var foundPlayer = Objects.requireNonNull(entityManager.find(Player.class, playerId), String.format("Player with id: %s not found!", playerId));
+            var foundTeam = Objects.requireNonNull(entityManager.find(Team.class, newTeamId), String.format("Team with id: %s not found!", newTeamId));
+            foundPlayer.setCurrentTeam(foundTeam);
+            transaction.commit();
+            return Map.entry(foundPlayer, foundTeam);
+        } catch (NullPointerException e) {
+            log.error("error while updating player!");
+            log.warn(e.getMessage());
+            transaction.rollback();
+            throw e;
+        } catch (RollbackException | IllegalStateException e) {
+            log.error("error while updating player!");
+            transaction.rollback();
+            throw e;
+        }
+    }
+
+    @Override
+    public void deletePlayersContract(String playerId, String teamId) {
+        EntityTransaction transaction = null;
+        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            var foundPlayer = Objects.requireNonNull(
+                    entityManager.find(Player.class, playerId), String.format("Player with id: %s not found!", playerId));
+            if (foundPlayer.getCurrentTeam().getId() != Integer.parseInt(teamId)) {
+                throw new IllegalArgumentException(String.format("provided teamId: %s is not the current team of the player: %s", teamId, playerId));
+            }
+            foundPlayer.setCurrentTeam(null);
+            transaction.commit();
+        } catch (NullPointerException e) {
+            log.error("error cannot find player with id: {}!", playerId);
+            log.warn(e.getMessage());
+            transaction.rollback();
+            throw e;
+        } catch (RollbackException | IllegalStateException e) {
+            log.error("error while terminating contract of player: {} with team!", playerId);
+            transaction.rollback();
+            throw e;
+        } catch (IllegalArgumentException e) {
+            log.warn("player: {} is currently not under contract with team: {}. Hence contract could not be terminated!", playerId, teamId);
+            transaction.rollback();
+            throw e;
+        }
     }
 }

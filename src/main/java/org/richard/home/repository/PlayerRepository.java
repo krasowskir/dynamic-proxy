@@ -16,12 +16,4 @@ public interface PlayerRepository {
     Map<Player, Address> getAllPlayers();
 
     List<Player> getPlayersFromTeam( int teamId);
-
-    int savePlayer(Player toSave);
-
-    List<Player> savePlayerList(List<Player> toSaveList);
-
-    boolean updatePlayer(Player toBe, String nameWhere);
-
-    boolean savePlayerLivesIn(Player toSave, Address whereLive);
 }

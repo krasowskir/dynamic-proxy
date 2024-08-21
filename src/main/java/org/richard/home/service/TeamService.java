@@ -14,4 +14,8 @@ public interface TeamService {
     Team findTeamById(String id) throws NoResultException;
 
     Team updateTeam(String teamId, TeamDto toTeam) throws LeagueDoesNotExistException;
+
+    Team getCurrentTeamOfPlayer(String playerId);
+
+
 }

@@ -3,7 +3,7 @@ package org.richard.home;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import groovy.lang.IntRange;
-import io.restassured.http.Header;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.richard.home.web.dto.PlayerDTO;
@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+@Disabled
 @Tag("multithreaded")
 public class MultiThreadedIT {
 

@@ -30,15 +30,20 @@ public class Player {
     @Enumerated(EnumType.STRING)
     private Country countryOfBirth;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinTable(name = "under_contract", joinColumns = @JoinColumn(name = "playerid"), inverseJoinColumns = @JoinColumn(name = "teamid"))
+    private Team currentTeam;
+
     public Player() {
     }
 
-    public Player(String name, Integer alter, String position, LocalDate dateOfBirth, Country countryOfBirth) {
+    public Player(String name, Integer alter, String position, LocalDate dateOfBirth, Country countryOfBirth, Team currentTeam) {
         this.name = name;
         this.alter = alter;
         this.position = position;
         this.dateOfBirth = dateOfBirth;
         this.countryOfBirth = countryOfBirth;
+        this.currentTeam = currentTeam;
     }
 
     public Integer getId() {
@@ -89,6 +94,14 @@ public class Player {
         this.countryOfBirth = Country.valueOf(countryOfBirth);
     }
 
+    public Team getCurrentTeam() {
+        return currentTeam;
+    }
+
+    public void setCurrentTeam(Team currentTeam) {
+        this.currentTeam = currentTeam;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -109,7 +122,8 @@ public class Player {
                 ", alter=" + alter +
                 ", position='" + position + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
-                ", countryOfBirth='" + countryOfBirth + '\'' +
+                ", countryOfBirth=" + countryOfBirth +
+                ", currentTeam=" + currentTeam +
                 '}';
     }
 }

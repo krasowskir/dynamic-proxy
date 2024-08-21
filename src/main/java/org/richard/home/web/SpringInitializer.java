@@ -3,7 +3,7 @@ package org.richard.home.web;
 
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
-import org.richard.home.config.GeneralConfiguration;
+import org.richard.home.config.DatabaseConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -21,7 +21,7 @@ public class SpringInitializer implements ServletContextListener {
         AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
         applicationContext.setServletContext(sce.getServletContext());
         sce.getServletContext().setAttribute("applicationContext", applicationContext);
-        applicationContext.register(GeneralConfiguration.class);
+        applicationContext.register(DatabaseConfiguration.class);
 //        applicationContext.register(ApplicationConfiguration.class);
         applicationContext.refresh();
         log.info("spring initialized: {}", Arrays.stream(applicationContext.getBeanDefinitionNames()).anyMatch(name -> name.equals("applicationConfiguration")));

@@ -2,9 +2,13 @@ package org.richard.home.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import static jakarta.servlet.http.HttpServletResponse.*;
 import static java.lang.String.format;
@@ -28,11 +33,14 @@ import static org.richard.home.web.WebUtils.*;
 public class PlayerServlet extends HttpServlet {
 
     private static final String PLAYERS_REQUEST_PATH = "/api/players";
+    private static final Pattern PLAYER_CONTRACTS_PATTERN = Pattern.compile("(.*)/contracts/(.*)");
     private static final Logger log = LoggerFactory.getLogger(PlayerServlet.class);
     private PlayerService playerService;
     private ObjectMapper objectMapper;
+    private PlayerMapper playerMapper;
 
     public PlayerServlet() {
+        playerMapper = new PlayerMapper();
     }
 
     @Override
@@ -40,7 +48,7 @@ public class PlayerServlet extends HttpServlet {
         log.info("init method without args was called...");
         this.playerService = StaticApplicationConfiguration.PLAYER_SERVICE_INSTANCE;
         this.objectMapper = StaticApplicationConfiguration.OBJECT_MAPPER;
-        this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.registerModule(new JavaTimeModule()).disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     }
 
     // ToDo: getPlayer by age is missing!
@@ -56,6 +64,7 @@ public class PlayerServlet extends HttpServlet {
                     handleResponse(resp, SC_OK, objectMapper.writeValueAsString(foundPlayer));
                 }
                 case HEADER_VALUE_APPLICATION_JSON -> {
+                    forwardToContractServlet(req, resp);
                     String playerId = extractPlayerId(req, PLAYERS_REQUEST_PATH);
                     Objects.requireNonNull(playerId.trim(), "required playerId in path is null!");
                     foundPlayer = playerService.findPlayerById(playerId);
@@ -67,6 +76,9 @@ public class PlayerServlet extends HttpServlet {
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
         } catch (NoResultException e) {
             handleResponse(resp, SC_NOT_FOUND, e.getMessage());
+        } catch (ServletException e) {
+            log.error("etwas sehr böses!");
+            throw new RuntimeException(e);
         }
     }
 
@@ -77,7 +89,7 @@ public class PlayerServlet extends HttpServlet {
             handleBadContentType(req, HEADER_VALUE_APPLICATION_JSON);
             playerDTO = objectMapper.readValue(req.getInputStream(), PlayerDTO.class);
             validateAndHandleInvalid(playerDTO);
-            var player = PlayerMapper.fromWebLayerTo(playerDTO);
+            var player = playerMapper.mapFromDomain(playerDTO);
             player = playerService.savePlayer(player);
             handleResponse(resp, SC_CREATED, objectMapper.writeValueAsString(player));
         } catch (IllegalArgumentException | JsonProcessingException e) {
@@ -114,13 +126,30 @@ public class PlayerServlet extends HttpServlet {
             } else {
                 handleResponse(resp, SC_BAD_REQUEST, format("player: %s could not be deleted successfully!", playerId));
             }
-        } catch (NoResultException e){
+        } catch (NoResultException e) {
             log.error("deleting of player: {} failed!", playerId);
             handleResponse(resp, SC_BAD_REQUEST, format("failed to delete player: %s", playerId));
-        }
-        catch (IllegalStateException | PersistenceException e) {
+        } catch (IllegalStateException | PersistenceException e) {
             log.error("deleting of player: {} failed!", playerId);
             handleResponse(resp, SC_INTERNAL_SERVER_ERROR, format("failed to delete player: %s", playerId));
+        }
+    }
+
+    @Override
+    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+        forwardToContractServlet((HttpServletRequest) req, (HttpServletResponse) res);
+        super.service(req, res);
+    }
+
+    private void forwardToContractServlet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getRequestURI().contains("/contracts")) {
+            var playerId = request.getPathInfo().substring(1, request.getPathInfo().indexOf("/contracts"));
+            request.getServletContext().setAttribute("playerId", playerId);
+            var matcher = PLAYER_CONTRACTS_PATTERN.matcher(request.getRequestURI());
+            if (matcher.matches()) {
+                var teamId = matcher.group(2);
+                request.getRequestDispatcher("/contracts" + "/" + teamId).forward(request, response);
+            }
         }
     }
 }

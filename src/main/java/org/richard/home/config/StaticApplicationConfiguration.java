@@ -6,10 +6,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.validation.ConstraintValidatorFactory;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
-import org.richard.home.repository.JpaLeagueRepository;
-import org.richard.home.repository.JpaPlayerRepository;
-import org.richard.home.repository.LeagueRepository;
-import org.richard.home.repository.PlayerRepository;
+import org.richard.home.repository.*;
 import org.richard.home.service.*;
 import org.richard.home.web.mapper.PlayerMapper;
 import org.richard.home.web.mapper.TeamMapper;
@@ -20,13 +17,14 @@ public class StaticApplicationConfiguration {
     public static ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
     public static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public static EntityManagerFactory ENTITY_MANAGER_FACTORY = GeneralConfiguration.entityManagerFactory();
+    public static EntityManagerFactory ENTITY_MANAGER_FACTORY = DatabaseConfiguration.entityManagerFactory();
 
     public static ConstraintValidatorFactory CONSTRAINT_VALIDATOR_FACTORY = VALIDATOR_FACTORY.getConstraintValidatorFactory();
 
     public static TeamMapper TEAM_MAPPER_INSTANCE = new TeamMapper();
+    public static TeamRepository TEAM_REPOSITORY = new JpaTeamRepository(ENTITY_MANAGER_FACTORY);
 
-    public static TeamService TEAM_SERVICE_INSTANCE = new JpaTeamService(ENTITY_MANAGER_FACTORY, TEAM_MAPPER_INSTANCE);
+    public static TeamService TEAM_SERVICE_INSTANCE = new JpaTeamService(ENTITY_MANAGER_FACTORY, TEAM_MAPPER_INSTANCE, TEAM_REPOSITORY);
     public static PlayerRepository PLAYER_REPOSITORY = new JpaPlayerRepository(ENTITY_MANAGER_FACTORY);
     public static PlayerService PLAYER_SERVICE_INSTANCE = new JpaPlayerService(ENTITY_MANAGER_FACTORY, PLAYER_REPOSITORY);
     public static PlayerMapper PLAYER_MAPPER_INSTANCE = new PlayerMapper();

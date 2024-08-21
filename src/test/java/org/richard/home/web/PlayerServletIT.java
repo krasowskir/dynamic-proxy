@@ -238,7 +238,7 @@ class PlayerServletIT {
                     .then()
                     .statusCode(200)
                     .and()
-                    .body(stringContainsInOrder(String.format("{\"id\":%s,\"name\":\"Richard Johanson\",\"alter\":33,\"position\":\"STRIKER\",\"dateOfBirth\":[1991,6,21],\"countryOfBirth\":\"SENEGAL\"}", playerId)));
+                    .body(stringContainsInOrder(String.format("{\"id\":%s,\"name\":\"Richard Johanson\",\"alter\":33,\"position\":\"STRIKER\",\"dateOfBirth\":[1991,6,21],\"countryOfBirth\":\"SENEGAL\",\"currentTeam\":null}", playerId)));
         }
 
         private String extractPlayerId(String input) throws JsonProcessingException {

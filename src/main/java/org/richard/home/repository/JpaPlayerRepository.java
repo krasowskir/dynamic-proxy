@@ -62,24 +62,4 @@ public class JpaPlayerRepository implements PlayerRepository {
             return null;
         }
     }
-
-    @Override
-    public int savePlayer(Player toSave) {
-        return 0;
-    }
-
-    @Override
-    public List<Player> savePlayerList(List<Player> toSaveList) {
-        return null;
-    }
-
-    @Override
-    public boolean updatePlayer(Player toBe, String nameWhere) {
-        return false;
-    }
-
-    @Override
-    public boolean savePlayerLivesIn(Player toSave, Address whereLive) {
-        return false;
-    }
 }

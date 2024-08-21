@@ -1,22 +1,33 @@
 package org.richard.home;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvValidationException;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.ServletsConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.richard.home.config.GeneralConfiguration;
+import org.richard.home.config.DatabaseConfiguration;
 import org.richard.home.config.StaticApplicationConfiguration;
-import org.richard.home.web.HealthServlet;
-import org.richard.home.web.LeagueServlet;
-import org.richard.home.web.PlayerServlet;
-import org.richard.home.web.TeamServlet;
+import org.richard.home.domain.Address;
+import org.richard.home.infrastructure.exception.InternalServerError;
+import org.richard.home.web.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class App {
     private static final Logger log = LoggerFactory.getLogger(App.class);
@@ -28,55 +39,112 @@ public class App {
             log.info("server start...");
             app.startServer();
             log.info("server started.");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            if (Arrays.asList(args).contains("address")) {
+                app.populateAddresses();
+            }
+        } catch (InternalServerError e) {
+            log.error(e.getMessage());
         }
     }
 
-    public void startServer() throws Exception {
-        Server server = new Server();
-        MBeanContainer mBeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
-        ServerConnector connector = new ServerConnector(server);
-        connector.setPort(8080);
-        server.addConnector(connector);
-        server.addBean(mBeanContainer);
+    public void startServer() {
+        Server server = null;
+        try {
+            server = new Server();
+            MBeanContainer mBeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+            ServerConnector connector = new ServerConnector(server);
+            connector.setPort(8080);
+            server.addConnector(connector);
+            server.addBean(mBeanContainer);
 
-        // Servlet web application context
-        WebAppContext servletContext = new WebAppContext();
-        servletContext.addConfiguration(new ServletsConfiguration());
+            // Servlet web application context
+            WebAppContext servletContext = new WebAppContext();
+            servletContext.addConfiguration(new ServletsConfiguration());
 
-        // Spring web application context
-        AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-        applicationContext.register(GeneralConfiguration.class);
-        applicationContext.register(StaticApplicationConfiguration.class);
-//        var staticConfig = new StaticApplicationConfiguration();
-        applicationContext.setServletContext(servletContext.getServletContext());
-        applicationContext.refresh();
+            // Spring web application context
+            AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+            applicationContext.register(DatabaseConfiguration.class);
+            applicationContext.register(StaticApplicationConfiguration.class);
+            //        var staticConfig = new StaticApplicationConfiguration();
+            applicationContext.setServletContext(servletContext.getServletContext());
+            applicationContext.refresh();
 
-        // initialize start Spring context
-        servletContext.addConfiguration();
-        servletContext.addEventListener(new ContextLoaderListener(applicationContext));
+            // initialize start Spring context
+            servletContext.addConfiguration();
+            servletContext.addEventListener(new ContextLoaderListener(applicationContext));
 
-        // ToDo: Finde heraus, wie man hier PlayerService injezieren kann!!!
-        servletContext.addServlet(PlayerServlet.class, "/players/*");
-        servletContext.addServlet(TeamServlet.class, "/teams/*");
-        servletContext.addServlet(LeagueServlet.class, "/leagues/*");
-        servletContext.addServlet(HealthServlet.class, "/health/*");
-//        context.addFilter(ArgumentsValidatingFilter.class, "/player/*", EnumSet.of(DispatcherType.REQUEST));
-//        servletContext.setErrorHandler();
-//        servletContext.setWar("target/dynamic-proxy-1.0.war");
-        servletContext.setResourceBase("target/dynamic-proxy-1.0.jar");
-        servletContext.setContextPath("/api");
+            // ToDo: Finde heraus, wie man hier PlayerService injezieren kann!!!
+            servletContext.addServlet(PlayerServlet.class, "/players/*");
+            servletContext.addServlet(PlayerUnderContractServlet.class, "/contracts/*");
+            servletContext.addServlet(TeamServlet.class, "/teams/*");
+            servletContext.addServlet(LeagueServlet.class, "/leagues/*");
+            servletContext.addServlet(HealthServlet.class, "/health/*");
+            servletContext.addServlet(PlayerUnderContractServlet.class, null);
+            servletContext.setResourceBase("target/dynamic-proxy-1.0.jar");
+            servletContext.setContextPath("/api");
 
-        server.setHandler(servletContext);
-        boolean isStarted;
-        do {
-            server.start();
-            Thread.sleep(1000);
-            isStarted = server.isStarted();
-            log.info("waiting for server to complete starting... isStarted: {}", isStarted);
-        } while (!server.isStarted());
+            server.setHandler(servletContext);
+            boolean isStarted;
+            do {
+                server.start();
+                Thread.sleep(1000);
+                isStarted = server.isStarted();
+                log.info("waiting for server to complete starting... isStarted: {}", isStarted);
+            } while (!server.isStarted());
+
+        } catch (InternalServerError e) {
+            log.error("something went wrong during startup. Will shutdown server!");
+            if (server != null && server.isStarted()) {
+                try {
+                    server.stop();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        } catch (BeanCreationException e) {
+            log.error("could not create a required bean!");
+            log.error(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
     }
 
+    public void populateAddresses() {
+        log.info("population of addresses started!");
+        List<List<String>> records = new ArrayList();
+        List<Address> addressList = new ArrayList<>();
+        EntityManagerFactory entityManagerFactory = StaticApplicationConfiguration.ENTITY_MANAGER_FACTORY;
+        try (CSVReader csvReader =
+                     new CSVReaderBuilder(
+                             new FileReader(
+                                     App.class.getClassLoader().getResource("addresses.csv").getFile()))
+                             .withSkipLines(1)
+                             .build()) {
+            try (var entityManager = entityManagerFactory.createEntityManager()) {
+
+                String[] values = null;
+                int counter = 0;
+                while ((values = csvReader.readNext()) != null && counter < 82727) {
+                    records.add(Arrays.asList(values));
+                    var addressToStore = CsvEntryParser.mapFromCsvToAddress(values);
+                    addressList.add(addressToStore);
+                    entityManager.persist(addressToStore);
+                    counter++;
+                    if (counter % 1000 == 0 && counter > 49103) {
+                        log.info("flushing occured. Counter: {}", counter);
+                        EntityTransaction transaction = entityManager.getTransaction();
+                        transaction.begin();
+                        entityManager.flush();
+                        transaction.commit();
+                    }
+                }
+                log.info("population of addresses finished!");
+            }
+        } catch (FileNotFoundException | CsvValidationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

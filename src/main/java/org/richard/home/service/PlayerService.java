@@ -2,6 +2,7 @@ package org.richard.home.service;
 
 import org.richard.home.domain.Address;
 import org.richard.home.domain.Player;
+import org.richard.home.domain.Team;
 import org.richard.home.web.dto.PlayerDTO;
 
 import java.util.List;
@@ -28,4 +29,8 @@ public interface PlayerService {
     boolean savePlayerLivesIn(Player toSave, Address whereLive);
 
     boolean deletePlayerById(String playerId);
+
+    Map.Entry<Player, Team> updateTeamOfPlayer(String playerId, String newTeamId);
+
+    void deletePlayersContract(String playerId, String teamId);
 }

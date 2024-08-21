@@ -1,11 +1,13 @@
 package org.richard.home.web.mapper;
 
 import org.richard.home.domain.Team;
+import org.richard.home.web.DomainMapper;
 import org.richard.home.web.dto.TeamDto;
 
-public class TeamMapper {
+public class TeamMapper implements DomainMapper<Team, TeamDto> {
 
-    public Team mapToTeam(TeamDto fromTeamDTO) {
+    @Override
+    public Team mapFromDomain(TeamDto fromTeamDTO) {
         var team = new Team();
         team.setName(fromTeamDTO.getName());
         team.setBudget(fromTeamDTO.getBudget());

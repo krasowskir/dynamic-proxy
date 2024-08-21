@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -19,6 +21,14 @@ import static org.richard.home.config.StaticApplicationConfiguration.VALIDATOR_F
 public class WebUtils {
 
     private static final Logger log = LoggerFactory.getLogger(WebUtils.class);
+
+    private static final String PLAYERS_UNDER_CONTRACT_PATH = ".*/contracts";
+
+    private static Pattern PLAYER_UNDER_CONTRACT_PLAYER_ID = Pattern.compile(PLAYERS_UNDER_CONTRACT_PATH);
+
+    public WebUtils() {
+
+    }
 
     public static String wrapIntoRegex(String input) {
         StringBuilder strB = new StringBuilder(input);
@@ -38,6 +48,14 @@ public class WebUtils {
                         .findFirst()
                         .orElse(null) : null;
     }
+
+    public static Function<HttpServletRequest, String> extractPlayerIdFrom = (HttpServletRequest request) ->
+            Optional.of(PLAYER_UNDER_CONTRACT_PLAYER_ID.matcher(request.getRequestURI()))
+                    .filter(Matcher::matches)
+                    .map(matcher -> matcher.group(1))
+                    .map(elem -> elem.replaceAll("/contract", ""))
+                    .orElse(null);
+
 
     public static void handleResponse(HttpServletResponse resp, int scBadRequest, String e) throws IOException {
         resp.setStatus(scBadRequest);

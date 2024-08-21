@@ -3,7 +3,7 @@ package org.richard.home;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
-import org.richard.home.config.GeneralConfiguration;
+import org.richard.home.config.DatabaseConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ class ConnectionTest {
             PROPS.load(
                     Files.newInputStream(
                             Path.of(
-                                    GeneralConfiguration.class.getClassLoader().getResource("application.properties").toURI())));
+                                    DatabaseConfiguration.class.getClassLoader().getResource("application.properties").toURI())));
         } catch (IOException | URISyntaxException e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);
