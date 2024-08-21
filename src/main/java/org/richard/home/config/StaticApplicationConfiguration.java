@@ -13,11 +13,16 @@ import org.richard.home.web.mapper.TeamMapper;
 
 public class StaticApplicationConfiguration {
 
+    private static DatabaseConfiguration databaseConfiguration;
+
+    static {
+        databaseConfiguration = new DatabaseConfiguration();
+    }
 
     public static ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
     public static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public static EntityManagerFactory ENTITY_MANAGER_FACTORY = DatabaseConfiguration.entityManagerFactory();
+    public static EntityManagerFactory ENTITY_MANAGER_FACTORY = databaseConfiguration.getEntityManagerFactory();
 
     public static ConstraintValidatorFactory CONSTRAINT_VALIDATOR_FACTORY = VALIDATOR_FACTORY.getConstraintValidatorFactory();
 

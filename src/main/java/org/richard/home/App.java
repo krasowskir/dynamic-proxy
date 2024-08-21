@@ -10,7 +10,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.ServletsConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.richard.home.config.DatabaseConfiguration;
 import org.richard.home.config.StaticApplicationConfiguration;
 import org.richard.home.domain.Address;
 import org.richard.home.infrastructure.exception.InternalServerError;
@@ -63,9 +62,7 @@ public class App {
 
             // Spring web application context
             AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-            applicationContext.register(DatabaseConfiguration.class);
             applicationContext.register(StaticApplicationConfiguration.class);
-            //        var staticConfig = new StaticApplicationConfiguration();
             applicationContext.setServletContext(servletContext.getServletContext());
             applicationContext.refresh();
 

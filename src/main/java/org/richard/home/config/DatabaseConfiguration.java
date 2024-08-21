@@ -29,10 +29,16 @@ import static org.hibernate.cfg.JdbcSettings.ISOLATION;
 import static org.hibernate.cfg.PersistenceSettings.*;
 
 
-@Configuration
+/**
+ * org.richard.home.config.DatabaseConfiguration
+ * is able to be instantiated and return the EntityManagerFactory as
+ * SINGLETON. It is flexible because tests can instantiate this class and call getEntityManagerFactory() in order to
+ * retrieve the entityManagerFactory.
+ */
 public class DatabaseConfiguration {
     private static final Logger log = LoggerFactory.getLogger(DatabaseConfiguration.class);
     private final static String HOST, PORT, USERNAME, PASSWORD, DATABASE_NAME;
+    private static EntityManagerFactory entityManagerFactory;
 
     static {
         Properties props = new Properties();
@@ -51,8 +57,10 @@ public class DatabaseConfiguration {
 
     public DatabaseConfiguration() {
         try {
-            entityManagerFactory();
-        } catch (InternalServerError e){
+            if (DatabaseConfiguration.entityManagerFactory == null){
+                DatabaseConfiguration.entityManagerFactory = constructEntityManagerFactory();
+            }
+        } catch (InternalServerError e) {
             log.error("could not create entity manager factory!", e.getMessage());
             throw e;
         }
@@ -79,7 +87,11 @@ public class DatabaseConfiguration {
         return dataSource;
     }
 
-    public static EntityManagerFactory entityManagerFactory() {
+    public EntityManagerFactory getEntityManagerFactory() {
+        return DatabaseConfiguration.entityManagerFactory;
+    }
+
+    private static EntityManagerFactory constructEntityManagerFactory() {
         Properties jpaProps = new Properties();
         jpaProps.put("hibernate.format_sql", "true");
         jpaProps.put("hibernate.hbm2ddl.auto", "none");
@@ -87,7 +99,6 @@ public class DatabaseConfiguration {
         jpaProps.put("hibernate.enable_lazy_load_no_trans", "true");
         jpaProps.put("hibernate.generate_statistics", "true");
         jpaProps.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-//        jpaProps.put("jakarta.persistence.jdbc.url", "jdbc:postgresql://" + HOST + ":" + PORT + "/" + DATABASE_NAME);
 
         PersistenceUnitInfo persistenceUnitInfo = myPersistenceUnitInfo();
         jpaProps.put(ISOLATION, TRANSACTION_SERIALIZABLE);
