@@ -25,6 +25,12 @@ public class WebUtils {
     private static final String PLAYERS_UNDER_CONTRACT_PATH = ".*/contracts";
 
     private static Pattern PLAYER_UNDER_CONTRACT_PLAYER_ID = Pattern.compile(PLAYERS_UNDER_CONTRACT_PATH);
+    public static Function<HttpServletRequest, String> extractPlayerIdFrom = (HttpServletRequest request) ->
+            Optional.of(PLAYER_UNDER_CONTRACT_PLAYER_ID.matcher(request.getRequestURI()))
+                    .filter(Matcher::matches)
+                    .map(matcher -> matcher.group(1))
+                    .map(elem -> elem.replaceAll("/contract", ""))
+                    .orElse(null);
 
     public WebUtils() {
 
@@ -48,14 +54,6 @@ public class WebUtils {
                         .findFirst()
                         .orElse(null) : null;
     }
-
-    public static Function<HttpServletRequest, String> extractPlayerIdFrom = (HttpServletRequest request) ->
-            Optional.of(PLAYER_UNDER_CONTRACT_PLAYER_ID.matcher(request.getRequestURI()))
-                    .filter(Matcher::matches)
-                    .map(matcher -> matcher.group(1))
-                    .map(elem -> elem.replaceAll("/contract", ""))
-                    .orElse(null);
-
 
     public static void handleResponse(HttpServletResponse resp, int scBadRequest, String e) throws IOException {
         resp.setStatus(scBadRequest);

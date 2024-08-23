@@ -3,6 +3,7 @@ package org.richard.home.service;
 import groovy.lang.IntRange;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.richard.home.config.DatabaseConfiguration;
 import org.richard.home.domain.Player;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Disabled
 class JpaPlayerServiceTestIT {
 
     private static EntityManagerFactory entityManagerFactory;

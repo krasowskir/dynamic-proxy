@@ -98,7 +98,7 @@ class WebUtilsTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"", "  "})
-    void testExtractPlayerId(String input){
+    void testExtractPlayerId(String input) {
         // given
         var mockedRequest = mock(HttpServletRequest.class);
         when(mockedRequest.getRequestURI()).thenReturn("http://localhost:8080/api/players/".concat(input));
@@ -124,7 +124,7 @@ class WebUtilsTest {
         var mockedRequest = mock(HttpServletRequest.class);
         when(mockedRequest.getContentType()).thenReturn(providedContentType);
 
-        if (expectedResult){
+        if (expectedResult) {
             assertDoesNotThrow(() -> WebUtils.handleBadContentType(mockedRequest, expectedContentType));
         } else {
             assertThrows(IllegalArgumentException.class,

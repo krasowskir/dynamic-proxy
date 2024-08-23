@@ -80,6 +80,7 @@ public class LeagueServlet extends HttpServlet {
             throw new IllegalArgumentException(format("request parameter size cannot be: %s", amountOfRequestParams));
         }
     }
+
     @Override
     public void init(ServletConfig config) {
         log.info("init method without args was called...");

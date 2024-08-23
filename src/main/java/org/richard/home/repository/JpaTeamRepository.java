@@ -45,7 +45,7 @@ public class JpaTeamRepository implements TeamRepository {
                             .findFirst())
                     .get()
                     .orElseThrow(NoResultException::new);
-        } catch (NoResultException e){
+        } catch (NoResultException e) {
             log.warn("no team found for player: {}", playerId);
             throw e;
         }

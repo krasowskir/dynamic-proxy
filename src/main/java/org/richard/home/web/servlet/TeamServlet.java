@@ -1,6 +1,7 @@
 package org.richard.home.web.servlet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.NoResultException;
@@ -137,7 +138,8 @@ public class TeamServlet extends HttpServlet {
             }
             case HEADER_VALUE_APPLICATION_JSON -> {
                 try (var input = req.getInputStream()) {
-                    return objectMapper.treeToValue(objectMapper.readTree(input), TeamDto.class);
+                    JsonNode jsonTree = objectMapper.readTree(input);
+                    return objectMapper.treeToValue(jsonTree, TeamDto.class);
                 } catch (IllegalArgumentException | JsonProcessingException e) {
                     log.warn("could not read and parse team json!");
                     throw e;

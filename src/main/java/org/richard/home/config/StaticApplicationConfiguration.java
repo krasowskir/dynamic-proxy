@@ -13,29 +13,24 @@ import org.richard.home.service.mapper.TeamMapper;
 
 public class StaticApplicationConfiguration {
 
-    private static DatabaseConfiguration databaseConfiguration;
-
-    static {
-        databaseConfiguration = new DatabaseConfiguration();
-    }
-
     public static ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
     public static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    public static EntityManagerFactory ENTITY_MANAGER_FACTORY = databaseConfiguration.getEntityManagerFactory();
-
     public static ConstraintValidatorFactory CONSTRAINT_VALIDATOR_FACTORY = VALIDATOR_FACTORY.getConstraintValidatorFactory();
-
     public static TeamMapper TEAM_MAPPER_INSTANCE = new TeamMapper();
+    public static PlayerMapper PLAYER_MAPPER_INSTANCE = new PlayerMapper();
+    private static DatabaseConfiguration databaseConfiguration;
+    public static EntityManagerFactory ENTITY_MANAGER_FACTORY = databaseConfiguration.getEntityManagerFactory();
     public static TeamRepository TEAM_REPOSITORY = new JpaTeamRepository(ENTITY_MANAGER_FACTORY);
 
     public static TeamService TEAM_SERVICE_INSTANCE = new JpaTeamService(ENTITY_MANAGER_FACTORY, TEAM_MAPPER_INSTANCE, TEAM_REPOSITORY);
     public static PlayerRepository PLAYER_REPOSITORY = new JpaPlayerRepository(ENTITY_MANAGER_FACTORY);
     public static PlayerService PLAYER_SERVICE_INSTANCE = new JpaPlayerService(ENTITY_MANAGER_FACTORY, PLAYER_REPOSITORY);
-    public static PlayerMapper PLAYER_MAPPER_INSTANCE = new PlayerMapper();
-
     public static LeagueRepository LEAGUE_REPOSITORY = new JpaLeagueRepository(ENTITY_MANAGER_FACTORY);
     public static LeagueService LEAGUE_SERVICE = new JpaLeagueService(ENTITY_MANAGER_FACTORY, LEAGUE_REPOSITORY);
+
+    static {
+        databaseConfiguration = new DatabaseConfiguration();
+    }
 
     private static ObjectMapper createObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();

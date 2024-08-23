@@ -21,8 +21,13 @@ class TeamServletIT {
     private static ObjectMapper objectMapper = StaticApplicationConfiguration.OBJECT_MAPPER;
 
     private static String provideValidTeamJson() {
+        // when address is a string, that is rendered as json!
+//        return "{\"name\":\"Manchester United FC\",\"budget\":1000000,\"logo\":\"test\",\"owner\":\"1878\",\"tla\":\"MUN\",\"address\":" +
+//                "\"{\\\"city\\\":\\\"Berlin\\\",\\\"street\\\":\\\"Guentzelstraße\\\",\\\"plz\\\":\\\"10707\\\",\\\"houseNumber\\\":11,\\\"country\\\":\\\"GERMANY\\\"}\"," +
+//                "\"phone\":\"01234567890\",\"website\":\"www.mun.com\",\"email\":\"test@testi.de\",\"venue\":\"\",\"wyId\":0,\"leagueId\":\"2021\"}";
+
         return "{\"name\":\"Manchester United FC\",\"budget\":1000000,\"logo\":\"test\",\"owner\":\"1878\",\"tla\":\"MUN\",\"address\":" +
-                "\"{\\\"city\\\":\\\"Berlin\\\",\\\"street\\\":\\\"Guentzelstraße\\\",\\\"plz\\\":\\\"10707\\\",\\\"houseNumber\\\":11,\\\"country\\\":\\\"GERMANY\\\"}\"," +
+                "{\"city\":\"Berlin\",\"street\":\"Guentzelstraße\",\"plz\":\"10707\",\"houseNumber\":11,\"country\":\"GERMANY\"}," +
                 "\"phone\":\"01234567890\",\"website\":\"www.mun.com\",\"email\":\"test@testi.de\",\"venue\":\"\",\"wyId\":0,\"leagueId\":\"2021\"}";
 
     }
@@ -34,7 +39,7 @@ class TeamServletIT {
                 "logo":"success",
                 "owner":"1878",
                 "tla":"MUN",
-                "address":"{\\"city\\":\\"Manchester\\",\\"street\\":\\"Guentzelstraße\\",\\"plz\\":\\"M60\\",\\"houseNumber\\":11,\\"country\\":\\"ENGLAND\\"}",
+                "address":{"city":"Manchester","street":"Guentzelstraße","plz":"M60","houseNumber":11,"country":"ENGLAND"},
                 "phone":"01234567890",
                 "website":"https://www.manutd.com/en/",
                 "email":"accessibility@manutd.co.uk",
@@ -48,7 +53,7 @@ class TeamServletIT {
     private static String provideValidTeamJsonButNotExistingLeagueId(String notExistingLeagueId) {
 
         return String.format("{\"name\":\"Manchester United FC\",\"budget\":1000000,\"logo\":\"test\",\"owner\":\"1878\",\"tla\":\"MUN\",\"address\":" +
-                "\"{\\\"city\\\":\\\"Berlin\\\",\\\"street\\\":\\\"Guentzelstraße\\\",\\\"plz\\\":\\\"10707\\\",\\\"houseNumber\\\":11,\\\"country\\\":\\\"GERMANY\\\"}\"," +
+                "{\"city\":\"Berlin\",\"street\":\"Guentzelstraße\",\"plz\":\"10707\",\"houseNumber\":11,\"country\":\"GERMANY\"}," +
                 "\"phone\":\"01234567890\",\"website\":\"www.mun.com\",\"email\":\"test@testi.de\",\"venue\":\"\",\"wyId\":0,\"leagueId\":\"%s\"}", notExistingLeagueId);
 
     }
@@ -56,8 +61,17 @@ class TeamServletIT {
     private static String provideInvalidTeamJson() {
         // missing street in address
         return "{\"name\":\"Manchester United FC\",\"budget\":1000000,\"logo\":\"test\",\"owner\":\"1878\",\"tla\":\"MUN\",\"address\":" +
-                "\"{\\\"city\\\":\\\"Berlin\\\",\\\"plz\\\":\\\"10707\\\",\\\"houseNumber\\\":11,\\\"country\\\":\\\"GERMANY\\\"}\"," +
+                "{\"city\":\"Berlin\",\"plz\":\"10707\",\"houseNumber\":11,\"country\":\"GERMANY\"}," +
                 "\"phone\":\"01234567890\",\"website\":\"www.mun.com\",\"email\":\"test@testi.de\",\"venue\":\"\",\"wyId\":0,\"leagueId\":\"2021\"}";
+    }
+
+    private static String extractTeamId(String response) {
+        return response.substring(response.indexOf("TeamId: "))
+                .trim()
+                .replaceAll("\n", "")
+                .substring("TeamId: ".length() - 1)
+                .stripLeading()
+                .stripTrailing();
     }
 
     @Tag("GetTeam")
@@ -238,14 +252,5 @@ class TeamServletIT {
                     .statusCode(200)
                     .body(stringContainsInOrder("Manchester United FC  Updated"));
         }
-    }
-
-    private static String extractTeamId(String response) {
-        return response.substring(response.indexOf("TeamId: "))
-                .trim()
-                .replaceAll("\n", "")
-                .substring("TeamId: ".length() - 1)
-                .stripLeading()
-                .stripTrailing();
     }
 }

@@ -23,12 +23,11 @@ import static org.hamcrest.Matchers.*;
 
 // ToDo: startet aktuell alles. Webschicht sollte isoliert vertestet werden!
 class PlayerServletIT {
-    private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private static final String FORM_URL_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded; charset=UTF-8";
     private static final String APPLICATION_JSON = "application/json";
     private static final String INVALID_CONTENT_TYPE = "invalid-contentType";
-
     private static Logger log = LoggerFactory.getLogger(PlayerServletIT.class);
+    private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @Nested
     @Tag("GetPlayers")

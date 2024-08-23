@@ -1,21 +1,17 @@
 package org.richard.home.service.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AddressDTO {
 
-    @JsonProperty("city")
     private String city;
-    @JsonProperty("street")
     private String street;
-    @JsonProperty("plz")
     private String plz;
 
-    @JsonProperty("houseNumber")
     private int houseNumber;
 
-    @JsonProperty("country")
     private Country country;
 
     public AddressDTO() {
@@ -27,6 +23,14 @@ public class AddressDTO {
         this.plz = plz;
         this.houseNumber = houseNumber;
         this.country = country;
+    }
+
+    public AddressDTO(String city, String street, String plz, int houseNumber, String country) {
+        this.city = city;
+        this.street = street;
+        this.plz = plz;
+        this.houseNumber = houseNumber;
+        this.country = Country.valueOf(country);
     }
 
     public String getCity() {

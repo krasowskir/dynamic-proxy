@@ -24,7 +24,9 @@ public interface PlayerService {
     List<Player> savePlayerList(List<Player> toSaveList);
 
     boolean updatePlayer(Player toBe, String nameWhere);
+
     Player updatePlayerById(PlayerDTO toBe, String id);
+
     Player updatePlayerById(Map<String, PlayerDTO> toBe);
 
     boolean savePlayerLivesIn(Player toSave, Address whereLive);

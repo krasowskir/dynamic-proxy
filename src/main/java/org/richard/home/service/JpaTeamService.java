@@ -18,11 +18,10 @@ import java.util.Optional;
 
 public class JpaTeamService implements TeamService {
 
+    private static Logger log = LoggerFactory.getLogger(JpaTeamService.class);
     private EntityManagerFactory entityManagerFactory;
     private TeamRepository teamRepository;
     private TeamMapper teamMapper;
-
-    private static Logger log = LoggerFactory.getLogger(JpaTeamService.class);
 
     public JpaTeamService(EntityManagerFactory entityManagerFactory, TeamMapper teamMapper, TeamRepository teamRepository) {
         this.entityManagerFactory = entityManagerFactory;

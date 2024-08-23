@@ -23,17 +23,17 @@ public class JpaPlayerRepository implements PlayerRepository {
 
     @Override
     public Player getPlayer(EntityManager localEntityManager, String name) {
-            CriteriaBuilder criteriaBuilder = localEntityManager.getCriteriaBuilder();
-            CriteriaQuery<Player> query = criteriaBuilder.createQuery(Player.class);
-    //        CriteriaQuery<Player> query = entityManager.createNamedQuery("findPlayerByName", Player.class);
-            Root<Player> root = query.from(Player.class);
-            query.where(criteriaBuilder.equal(root.get(Player_.NAME), name));
-            return localEntityManager.createQuery(query).getSingleResult();
+        CriteriaBuilder criteriaBuilder = localEntityManager.getCriteriaBuilder();
+        CriteriaQuery<Player> query = criteriaBuilder.createQuery(Player.class);
+        //        CriteriaQuery<Player> query = entityManager.createNamedQuery("findPlayerByName", Player.class);
+        Root<Player> root = query.from(Player.class);
+        query.where(criteriaBuilder.equal(root.get(Player_.NAME), name));
+        return localEntityManager.createQuery(query).getSingleResult();
     }
 
     // ToDo: Thread basierte registry, wo der entityManager geholt wird pro thread!
     @Override
-    public List<Player> getPlayerByAlter( int alter) {
+    public List<Player> getPlayerByAlter(int alter) {
         try (var entityManager = this.entityManagerFactory.createEntityManager()) {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Player> query = criteriaBuilder.createQuery(Player.class);
@@ -52,7 +52,7 @@ public class JpaPlayerRepository implements PlayerRepository {
 
     // ToDo: dynamic Query via Graph! und via annotation maping
     @Override
-    public List<Player> getPlayersFromTeam( int teamId) {
+    public List<Player> getPlayersFromTeam(int teamId) {
         try (var entityManager = this.entityManagerFactory.createEntityManager()) {
             var criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Player> query = criteriaBuilder.createQuery(Player.class);

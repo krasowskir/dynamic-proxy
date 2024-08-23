@@ -15,7 +15,6 @@
 - OpenIdConnect & oauth2 integration implementieren
 - Adresse als separate Entity herausarbeiten
 
-
 ## Erledigt:
 
 - jpa-model gen mit hibernate 6 und java 17
@@ -26,20 +25,19 @@
 - wie stoppt man maven-exec prozesse?
 - wie startet man die Application in einem anderen thread, separat vom maven lifecycle?
 
-
-
 ## Probleme:
+
 - wie stoppt man maven-exec prozesse? -> es gibt kein stop goal!
-  - mit jetty-maven plugin gibt es das Problem nicht!
+    - mit jetty-maven plugin gibt es das Problem nicht!
 - wie startet man die Application in einem anderen thread, separat vom maven lifecycle?
-  - exec-maven-plugin führt alles nur in einer VM aus. -> forkMode oder jetty plugin
+    - exec-maven-plugin führt alles nur in einer VM aus. -> forkMode oder jetty plugin
 - wie schaltet man cache für integrationsTests aus?
 
-
 ## Features
+
 - Umzug eines Players
 - Wechsel eines Players zu anderem Team
-  - Karrierepfad: Historie der Vereine eines Spielers 
+    - Karrierepfad: Historie der Vereine eines Spielers
 - Aufsteigen einer Mannschaft
 - Trainererstellung, Trainerwechsel
 - Meisterschaft Spiel: Mannschaft - Mannschaft 

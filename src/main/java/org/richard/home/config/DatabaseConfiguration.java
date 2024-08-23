@@ -56,7 +56,7 @@ public class DatabaseConfiguration {
 
     public DatabaseConfiguration() {
         try {
-            if (DatabaseConfiguration.entityManagerFactory == null){
+            if (DatabaseConfiguration.entityManagerFactory == null) {
                 DatabaseConfiguration.entityManagerFactory = constructEntityManagerFactory();
             }
         } catch (InternalServerError e) {
@@ -84,10 +84,6 @@ public class DatabaseConfiguration {
         log.info("configuration: url {}, username: {}", jdbcUrl, USERNAME);
         dataSource.getConnection().isValid(1000);
         return dataSource;
-    }
-
-    public EntityManagerFactory getEntityManagerFactory() {
-        return DatabaseConfiguration.entityManagerFactory;
     }
 
     private static EntityManagerFactory constructEntityManagerFactory() {
@@ -216,6 +212,10 @@ public class DatabaseConfiguration {
                 return null;
             }
         };
+    }
+
+    public EntityManagerFactory getEntityManagerFactory() {
+        return DatabaseConfiguration.entityManagerFactory;
     }
 
     @Override

@@ -1,6 +1,7 @@
 # Server
 
 build the tests:
+
 ```
 mvn clean verify -Dgroups=PostPlayers
 ```
@@ -15,6 +16,7 @@ java --enable-preview -jar target/dynamic-proxy-1.0-jar-with-dependencies.jar
 ```
 
 create uber-jar:
+
 ```
 mvn -Pfat-jar package
 ```
@@ -22,6 +24,7 @@ mvn -Pfat-jar package
 tests:
 
 get player by age
+
 ```
 curl -i  -XGET http://localhost:8080/api/player?age=32
 ```
@@ -36,6 +39,7 @@ mvn exec:java -Dexec.mainClass=org.richard.home.App
 ```
 
 ## Teams
+
 creating a team:
 
 ```
@@ -56,7 +60,9 @@ curl -i -X GET "http://localhost:8080/api/teams?id=66"
 ```
 
 ## Players
+
 create a single player
+
 ```
 curl -i -XPOST "http://localhost:8080/api/players" -H "Content-Type: application/json" -d '{
   "name": "Richard Johanson",
@@ -77,6 +83,7 @@ Server: Jetty(11.0.20)
 ```
 
 get player by id
+
 ```
 curl -i -XGET "http://localhost:8080/api/players/177321" -H "Content-Type: application/json"
 HTTP/1.1 200 OK
@@ -88,7 +95,9 @@ Server: Jetty(11.0.20)
 
 {"id":177321,"name":"Richard Johanson","alter":33,"position":"STRIKER","dateOfBirth":[1991,6,20],"countryOfBirth":"GERMANY"}
 ```
+
 use of path parameters is exclusive to use of request parameters
+
 ```
 curl -i -XGET "http://localhost:8080/api/players/177321?name=Richard%20Johanson" -H "Content-Type: application/x-www-form-urlencoded" 
 HTTP/1.1 400 Bad Request
@@ -102,6 +111,7 @@ If request parameters are used, no path parameters are allowed! URI path contian
 ```
 
 get player by name
+
 ```
 curl -i -XGET "http://localhost:8080/api/players/177321?name=Richard%20Johanson" -H "Content-Type: application/x-www-form-urlencoded" 
 HTTP/1.1 200 OK
@@ -115,6 +125,7 @@ Server: Jetty(11.0.20)
 ```
 
 update player by id
+
 ```
 curl -i -XPUT "http://localhost:8080/api/players/177322" -H "Content-Type: application/json" -d '{"name":"Richard Johanson","age":33,"position":"STRIKER","dateOfBirth":"1991-06-21","countryOfBirth":"SENEGAL"}'
 HTTP/1.1 200 OK
@@ -128,6 +139,7 @@ Server: Jetty(11.0.20)
 ```
 
 delete player by id
+
 ```
 HTTP/1.1 200 OK
 Date: Wed, 31 Jul 2024 14:13:28 GMT
@@ -140,6 +152,7 @@ player: 177321 deleted successfully!
 ```
 
 update team of the player
+
 ```
 curl -i -XPUT "http://localhost:8080/api/players/3608/contract" -H "Content-Type: application/json" -d '{"playerId": "abcd", "teamId": "66"}'
 HTTP/1.1 200 OK
@@ -154,7 +167,9 @@ Server: Jetty(11.0.20)
 ```
 
 ## Leagues
+
 create a league
+
 ```
 curl -i -XPOST "http://localhost:8080/api/leagues" -H "Content-Type: application/json" -d '{"name":"Rich-league","code":"RL1"}'
 HTTP/1.1 201 Created
@@ -168,6 +183,7 @@ Server: Jetty(11.0.20)
 ```
 
 get a league by (id, code, name)
+
 ```
 curl -i -XGET "http://localhost:8080/api/leagues?code=BL1" -H "Content-Type: application/x-www-form-urlencoded"
 curl -i -XGET "http://localhost:8080/api/leagues?id=2144" -H "Content-Type: application/x-www-form-urlencoded"
@@ -182,6 +198,7 @@ Server: Jetty(11.0.20)
 ```
 
 delete a league
+
 ```
 curl -i -XDELETE "http://localhost:8080/api/leagues/2143" 
 HTTP/1.1 200 OK
@@ -195,6 +212,7 @@ deletion of league: 2143 was successful!
 ```
 
 update a league
+
 ```
 curl -i -XPUT "http://localhost:8080/api/leagues/2144" -H "Content-Type: application/json" -d '{"code":"RL0","name":"Richard-league"}'
 HTTP/1.1 200 OK

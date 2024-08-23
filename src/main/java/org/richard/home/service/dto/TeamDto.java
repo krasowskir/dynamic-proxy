@@ -2,7 +2,6 @@ package org.richard.home.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import org.richard.home.service.dto.validator.ValidAddress;
@@ -96,11 +95,6 @@ public class TeamDto {
 
     public void setAddress(AddressDTO address) {
         this.address = address;
-    }
-
-    public void setAddress(String address) throws JsonProcessingException {
-//        this.address = StaticApplicationConfiguration.OBJECT_MAPPER.readValue(address, AddressDTO.class);
-        this.address = null;
     }
 
     public String getPhone() {

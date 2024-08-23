@@ -33,7 +33,7 @@ public class JpaLeagueService implements LeagueService {
             entityManager.persist(league);
             transaction.commit();
             return league;
-        } catch (IllegalStateException | PersistenceException e){
+        } catch (IllegalStateException | PersistenceException e) {
             log.error("error while persisting league: {}", leagueDTO, e);
             transaction.rollback();
             throw e;
