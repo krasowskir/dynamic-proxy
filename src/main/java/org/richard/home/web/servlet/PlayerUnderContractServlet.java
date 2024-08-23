@@ -1,4 +1,4 @@
-package org.richard.home.web;
+package org.richard.home.web.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -14,7 +14,7 @@ import org.richard.home.domain.Team;
 import org.richard.home.infrastructure.exception.InternalServerError;
 import org.richard.home.service.PlayerService;
 import org.richard.home.service.TeamService;
-import org.richard.home.web.dto.PlayersTeamDTO;
+import org.richard.home.service.dto.PlayersTeamDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

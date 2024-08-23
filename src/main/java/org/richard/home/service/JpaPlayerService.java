@@ -6,7 +6,7 @@ import org.richard.home.domain.Address;
 import org.richard.home.domain.Player;
 import org.richard.home.domain.Team;
 import org.richard.home.repository.PlayerRepository;
-import org.richard.home.web.dto.PlayerDTO;
+import org.richard.home.service.dto.PlayerDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,9 +119,9 @@ public class JpaPlayerService implements PlayerService {
     public Player updatePlayerById(PlayerDTO toBe, String id) {
         EntityTransaction transaction = null;
         try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
-            Player foundPlayer = entityManager.find(Player.class, id);
             transaction = entityManager.getTransaction();
             transaction.begin();
+            Player foundPlayer = entityManager.find(Player.class, id);
             foundPlayer = updatePlayerAttributes(toBe, foundPlayer);
             transaction.commit();
             return foundPlayer;
@@ -130,6 +130,12 @@ public class JpaPlayerService implements PlayerService {
             transaction.rollback();
             throw e;
         }
+    }
+
+    @Override
+    public Player updatePlayerById(Map<String, PlayerDTO> toBe) {
+        var key = toBe.keySet().iterator().next();
+        return this.updatePlayerById(toBe.get(key), key);
     }
 
     @Override

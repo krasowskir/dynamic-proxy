@@ -1,18 +1,14 @@
 package org.richard.home.service;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.RollbackException;
+import jakarta.persistence.*;
 import org.richard.home.domain.League;
 import org.richard.home.repository.LeagueRepository;
-import org.richard.home.web.dto.LeagueDTO;
+import org.richard.home.service.dto.LeagueDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-import static org.richard.home.config.StaticApplicationConfiguration.ENTITY_MANAGER_FACTORY;
 import static org.richard.home.service.JpaTeamService.isNotNullOrEmpty;
 
 public class JpaLeagueService implements LeagueService {
@@ -20,15 +16,17 @@ public class JpaLeagueService implements LeagueService {
     private static final Logger log = LoggerFactory.getLogger(JpaLeagueService.class);
 
     private LeagueRepository leagueRepository;
+    private EntityManagerFactory entityManagerFactory;
 
-    public JpaLeagueService(LeagueRepository leagueRepository) {
+    public JpaLeagueService(EntityManagerFactory entityManagerFactory, LeagueRepository leagueRepository) {
+        this.entityManagerFactory = entityManagerFactory;
         this.leagueRepository = leagueRepository;
     }
 
     @Override
     public League createLeague(LeagueDTO leagueDTO) {
         EntityTransaction transaction = null;
-        try (EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager()) {
+        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
             transaction = entityManager.getTransaction();
             transaction.begin();
             var league = mapToDomainLayer(leagueDTO);
@@ -64,7 +62,7 @@ public class JpaLeagueService implements LeagueService {
     @Override
     public boolean deleteLeague(String id) {
         EntityTransaction transaction = null;
-        try (EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager()) {
+        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
             transaction = entityManager.getTransaction();
             transaction.begin();
             entityManager.remove(Objects.requireNonNull(entityManager.find(League.class, id)));
@@ -83,7 +81,7 @@ public class JpaLeagueService implements LeagueService {
     @Override
     public League updateLeague(String id, LeagueDTO toBe) {
         EntityTransaction transaction = null;
-        try (EntityManager entityManager = ENTITY_MANAGER_FACTORY.createEntityManager()) {
+        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
             League league = entityManager.find(League.class, id);
             transaction = entityManager.getTransaction();
             transaction.begin();

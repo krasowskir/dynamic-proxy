@@ -6,6 +6,6 @@ import org.richard.home.domain.Country;
 public class CsvEntryParser {
 
     static Address mapFromCsvToAddress(String[] line) {
-        return new Address(line[5], line[3].concat(" ").concat(line[2]), line[6], Country.AUSTRALIA);
+        return new Address(line[5], line[3].concat(" ").concat(line[2]), line[6], Country.GERMANY);
     }
 }

@@ -3,7 +3,7 @@ package org.richard.home.service;
 import jakarta.persistence.NoResultException;
 import org.richard.home.domain.Team;
 import org.richard.home.infrastructure.exception.LeagueDoesNotExistException;
-import org.richard.home.web.dto.TeamDto;
+import org.richard.home.service.dto.TeamDto;
 
 public interface TeamService {
 

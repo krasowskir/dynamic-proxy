@@ -6,7 +6,7 @@ import groovy.lang.IntRange;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.richard.home.web.dto.PlayerDTO;
+import org.richard.home.service.dto.PlayerDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

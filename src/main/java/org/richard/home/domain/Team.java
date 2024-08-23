@@ -18,12 +18,15 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TeamsIdGenerator")
     @SequenceGenerator(allocationSize = 1, sequenceName = "teams_seq", name = "TeamsIdGenerator")
     private int id;
-
     private String name;
     private int budget;
     private String logo;
     private String tla;
-    private String address;
+
+    @OneToOne
+    @JoinTable(name = "plays_in", joinColumns = @JoinColumn(name = "teamId"), inverseJoinColumns = @JoinColumn(name = "addressId"))
+    private Address address;
+
     private String phone;
     private String email;
     private String venue;
@@ -31,7 +34,6 @@ public class Team {
     private String owner;
     private int wyId;
 
-    //    private League[] league;
     @ManyToOne
     @JoinColumn(name = "league_id")
     private League league;
@@ -91,11 +93,11 @@ public class Team {
         this.tla = tla;
     }
 
-    public String getAddress() {
+    public Address getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(Address address) {
         this.address = address;
     }
 

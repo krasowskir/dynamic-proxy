@@ -1,0 +1,48 @@
+ Franz-Kremer-Allee 1, Köln, 50937
+ Horrenberger Straße 58, Zuzenhausen, 74939
+ Bismarckstr. 122-124, Leverkusen, 51373
+ Rheinlanddamm 207-209, Dortmund, 44137
+ Säbenerstr. 51, München, 81547
+ Ernst-Kuzorra-Weg 1, Gelsenkirchen, 45891
+ Sylvesterallee 7, Hamburg, 22525
+ Robert-Enke-Straße 1, Hannover, 30169
+ Hanns-Braun-Straße Friesenhaus II, Berlin, 14053
+ Mercedesstraße 109, Stuttgart, 70372
+ In den Allerwiesen 1, Wolfsburg, 38446
+ Franz-Böhmert-Str. 1c, Bremen, 28205
+ Fritz-Walter-Straße 1, Kaiserslautern, 67663
+ Valznerweiherstraße 200, Nürnberg, 90480
+ Dr.-Martin-Luther-King-Weg 20, Mainz, 55122
+ Donauwörther Straße 170, Augsburg, 86154
+ Schwarzwaldstraße 193, Freiburg, 79117
+ Hennes-Weisweiler-Allee 1, Mönchengladbach, 41179
+ Mörfelder Landstraße 362, Frankfurt am Main, 60528
+ Auf dem Heiligengeistfeld, Hamburg, 20359
+ Laubenweg 60, Fürth, 90765
+ Lößnitzer Straße 95, Aue, 08280
+ Am Eliaspark 1, Cottbus, 03042
+ Flinger Broich 87, Düsseldorf, 40235
+ Margaretenstraße 5-7, Duisburg, 47055
+ Grünwalder Str. 114, München, 81547
+ null, Aachen, null
+ An der Wuhlheide 263, Berlin, 12555
+ Paderborner Str. 89, Paderborn, 33104
+ Geisenfelder Straße 1, Ingolstadt, 85053
+ Adenauerring 17, Karlsruhe, 76131
+ Hamburger Straße 210, Braunschweig, 38112
+ Trotzenburger Weg 14, Rostock, 18057
+ Lennéstraße 12, Dresden, 01069
+ Castroper Straße 145, Bochum, 44791
+ Melanchthonstraße 31a, Bielefeld, 33615
+ Berliner Straße 9, Wiesbaden, 65189
+ Burnden Way, Bolton, BL6 6JW
+ Fulham Road, London, SW6 1HS
+ Goodison Park, Liverpool, L4 4EL
+ Craven Cottage Stevenage Road, London, SW6 6HH
+ Anfield Road, Liverpool, L4 0TH
+ SportCity, Manchester, M11 3FF
+ Sir Matt Busby Way, Manchester, M16 0RA
+ Sports Direct Arena, Newcastle upon Tyne, NE1 4ST
+ Carrow Road, Norwich, NR1 1JE
+ South Africa Road Shepherds Bush, London, W12 7PA
+ Stanley Matthews Way, Stoke-on-Trent, ST4 4EG

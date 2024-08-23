@@ -136,7 +136,7 @@ public class TeamDAO {
                 tmpTeam.setLogo(rs.getString(4));
                 tmpTeam.setOwner(rs.getString(5));
                 tmpTeam.setTla(rs.getString(6));
-                tmpTeam.setAddress(rs.getString(7));
+//                tmpTeam.setAddress(rs.getString(7));
                 tmpTeam.setPhone(rs.getString(8));
                 tmpTeam.setWebsite(rs.getString(9));
                 tmpTeam.setEmail(rs.getString(10));

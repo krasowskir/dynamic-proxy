@@ -39,5 +39,7 @@
 ## Features
 - Umzug eines Players
 - Wechsel eines Players zu anderem Team
+  - Karrierepfad: Historie der Vereine eines Spielers 
 - Aufsteigen einer Mannschaft
 - Trainererstellung, Trainerwechsel
+- Meisterschaft Spiel: Mannschaft - Mannschaft 

@@ -1,4 +1,4 @@
-package org.richard.home.web.dto;
+package org.richard.home.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Min;

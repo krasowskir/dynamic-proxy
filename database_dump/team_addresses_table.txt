@@ -1,0 +1,48 @@
+1 | 1. FC Köln                      | Franz-Kremer-Allee 1, Köln, 50937
+2 | TSG 1899 Hoffenheim             | Horrenberger Straße 58, Zuzenhausen, 74939
+3 | Bayer 04 Leverkusen             | Bismarckstr. 122-124, Leverkusen, 51373
+4 | Borussia Dortmund               | Rheinlanddamm 207-209, Dortmund, 44137
+5 | FC Bayern München               | Säbenerstr. 51, München, 81547
+6 | FC Schalke 04                   | Ernst-Kuzorra-Weg 1, Gelsenkirchen, 45891
+7 | Hamburger SV                    | Sylvesterallee 7, Hamburg, 22525
+8 | Hannover 96                     | Robert-Enke-Straße 1, Hannover, 30169
+9 | Hertha BSC                      | Hanns-Braun-Straße Friesenhaus II, Berlin, 14053
+10 | VfB Stuttgart                 | Mercedesstraße 109, Stuttgart, 70372
+11 | VfL Wolfsburg                 | In den Allerwiesen 1, Wolfsburg, 38446
+12 | SV Werder Bremen              | Franz-Böhmert-Str. 1c, Bremen, 28205
+13 | 1. FC Kaiserslautern          | Fritz-Walter-Straße 1, Kaiserslautern, 67663
+14 | 1. FC Nürnberg                | Valznerweiherstraße 200, Nürnberg, 90480
+15 | 1. FSV Mainz 05               | Dr.-Martin-Luther-King-Weg 20, Mainz, 55122
+16 | FC Augsburg                   | Donauwörther Straße 170, Augsburg, 86154
+17 | SC Freiburg                   | Schwarzwaldstraße 193, Freiburg, 79117
+18 | Borussia Mönchengladbach      | Hennes-Weisweiler-Allee 1, Mönchengladbach, 41179
+19 | Eintracht Frankfurt           | Mörfelder Landstraße 362, Frankfurt am Main, 60528
+20 | FC St. Pauli 1910             | Auf dem Heiligengeistfeld, Hamburg, 20359
+21 | SpVgg Greuther Fürth 1903     | Laubenweg 60, Fürth, 90765
+22 | FC Erzgebirge Aue             | Lößnitzer Straße 95, Aue, 08280
+23 | FC Energie Cottbus            | Am Eliaspark 1, Cottbus, 03042
+24 | TSV Fortuna 95 Düsseldorf     | Flinger Broich 87, Düsseldorf, 40235
+25 | MSV Duisburg                  | Margaretenstraße 5-7, Duisburg, 47055
+26 | TSV 1860 München              | Grünwalder Str. 114, München, 81547
+27 | Alemannia Aachen              | null, Aachen, null
+28 | 1. FC Union Berlin            | An der Wuhlheide 263, Berlin, 12555
+29 | SC Paderborn 07               | Paderborner Str. 89, Paderborn, 33104
+31 | FC Ingolstadt 04              | Geisenfelder Straße 1, Ingolstadt, 85053
+32 | Karlsruher SC                 | Adenauerring 17, Karlsruhe, 76131
+33 | Eintracht Braunschweig        | Hamburger Straße 210, Braunschweig, 38112
+34 | FC Hansa Rostock              | Trotzenburger Weg 14, Rostock, 18057
+35 | SG Dynamo Dresden             | Lennéstraße 12 ,Dresden, 01069
+36 | VfL Bochum 1848               | Castroper Straße 145, Bochum, 44791
+38 | Arminia Bielefeld             | Melanchthonstraße 31a, Bielefeld, 33615
+39 | SV Wehen Wiesbaden            | Berliner Straße 9, Wiesbaden, 65189
+60 | Bolton Wanderers FC           | Burnden Way, Bolton, BL6 6JW
+61 | Chelsea FC                    | Fulham Road, London, SW6 1HS
+62 | Everton FC                    | Goodison Park, Liverpool, L4 4EL
+63 | Fulham FC                     | Craven Cottage, Stevenage Road, London, SW6 6HH
+64 | Liverpool FC                  | Anfield Road, Liverpool, L4 0TH
+65 | Manchester City FC            | SportCity, Manchester, M11 3FF
+66 | Manchester United FC          | Sir Matt Busby Way, Manchester, M16 0RA
+67 | Newcastle United FC           | Sports Direct Arena, Newcastle upon Tyne, NE1 4ST
+68 | Norwich City FC               | Carrow Road Norwich, NR1 1JE
+69 | Queens Park Rangers FC        | South Africa Road, Shepherds Bush London, W12 7PA
+70 | Stoke City FC                 | Stanley Matthews Way, Stoke-on-Trent, ST4 4EG

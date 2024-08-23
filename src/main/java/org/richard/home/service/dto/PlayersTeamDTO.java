@@ -1,4 +1,4 @@
-package org.richard.home.web.dto;
+package org.richard.home.service.dto;
 
 public class PlayersTeamDTO {
 

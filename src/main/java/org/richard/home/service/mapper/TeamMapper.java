@@ -1,8 +1,8 @@
-package org.richard.home.web.mapper;
+package org.richard.home.service.mapper;
 
 import org.richard.home.domain.Team;
-import org.richard.home.web.DomainMapper;
-import org.richard.home.web.dto.TeamDto;
+import org.richard.home.service.DomainMapper;
+import org.richard.home.service.dto.TeamDto;
 
 public class TeamMapper implements DomainMapper<Team, TeamDto> {
 
@@ -17,7 +17,7 @@ public class TeamMapper implements DomainMapper<Team, TeamDto> {
         team.setPhone(fromTeamDTO.getPhone());
         team.setTla(fromTeamDTO.getTla());
         team.setVenue(fromTeamDTO.getVenue());
-        team.setAddress(fromTeamDTO.getAddress().toString());
+//        team.setAddress(fromTeamDTO.getAddress().toString());
         team.setWebsite(fromTeamDTO.getWebsite());
 //        team.setLeague(fromTeamDTO.getLeagueId()); // liga komplexes OBjekt!
         team.setWyId(fromTeamDTO.getWyId());

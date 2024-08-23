@@ -1,8 +1,8 @@
-package org.richard.home.infrastructure;
+package org.richard.home.service.dto.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.richard.home.web.dto.AddressDTO;
+import org.richard.home.service.dto.AddressDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

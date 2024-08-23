@@ -1,4 +1,4 @@
-package org.richard.home.web;
+package org.richard.home.web.servlet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.richard.home.domain.Team;
 import org.richard.home.infrastructure.exception.LeagueDoesNotExistException;
 import org.richard.home.service.TeamService;
-import org.richard.home.web.dto.TeamDto;
+import org.richard.home.service.dto.TeamDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

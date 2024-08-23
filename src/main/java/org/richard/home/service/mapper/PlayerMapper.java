@@ -1,9 +1,9 @@
-package org.richard.home.web.mapper;
+package org.richard.home.service.mapper;
 
 import org.richard.home.domain.Country;
 import org.richard.home.domain.Player;
-import org.richard.home.web.DomainMapper;
-import org.richard.home.web.dto.PlayerDTO;
+import org.richard.home.service.DomainMapper;
+import org.richard.home.service.dto.PlayerDTO;
 
 public class PlayerMapper implements DomainMapper<Player, PlayerDTO> {
 

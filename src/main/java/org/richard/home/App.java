@@ -12,8 +12,9 @@ import org.eclipse.jetty.webapp.ServletsConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.richard.home.config.StaticApplicationConfiguration;
 import org.richard.home.domain.Address;
+import org.richard.home.domain.Country;
 import org.richard.home.infrastructure.exception.InternalServerError;
-import org.richard.home.web.*;
+import org.richard.home.web.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanCreationException;
@@ -40,6 +41,9 @@ public class App {
             log.info("server started.");
             if (Arrays.asList(args).contains("address")) {
                 app.populateAddresses();
+            }
+            if (Arrays.asList(args).contains("teamAddress")) {
+                app.populateTeamAddresses("extracted_addresses.txt");
             }
         } catch (InternalServerError e) {
             log.error(e.getMessage());
@@ -142,6 +146,52 @@ public class App {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void populateTeamAddresses(String fileName) {
+        log.info("population of team addresses started!");
+        EntityManagerFactory entityManagerFactory = StaticApplicationConfiguration.ENTITY_MANAGER_FACTORY;
+
+        try (CSVReader csvReader =
+                     new CSVReaderBuilder(
+                             new FileReader(
+                                     App.class.getClassLoader().getResource(fileName).getFile()))
+                             .withSkipLines(1)
+                             .build()) {
+            try (var entityManager = entityManagerFactory.createEntityManager()) {
+
+                String[] values = null;
+                while ((values = csvReader.readNext()) != null) {
+                    var addressToStore = TeamAddressCsvRecordParser.mapFromCsvToAddress(values);
+                    EntityTransaction transaction = entityManager.getTransaction();
+                    transaction.begin();
+                    entityManager.persist(addressToStore);
+                    transaction.commit();
+                }
+                log.info("population of addresses finished!");
+            }
+        } catch (FileNotFoundException | CsvValidationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private class TeamAddressCsvRecordParser {
+        private final static List<String> englishCities = Arrays.asList(
+                "Bolton",
+                "London",
+                "Liverpool",
+                "Manchester",
+                "Newcastle upon Tyne",
+                "Norwich",
+                "Stoke-on-Trent");
+
+        static Address mapFromCsvToAddress(String[] column) {
+            return englishCities.contains(column[1]) ?
+                    new Address(column[1], column[0], column[2], Country.ENGLAND) :
+                    new Address(column[1], column[0], column[2], Country.GERMANY);
         }
     }
 }

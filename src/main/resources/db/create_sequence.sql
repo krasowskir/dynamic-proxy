@@ -15,3 +15,11 @@ LIMIT 82727;
 alter table lives_in add constraint fk_primkey_players foreign key (playerId) references players(id) on delete cascade on update cascade;
 alter table lives_in add constraint fk_primkey_addresses foreign key (addressId) references addresses(id) on delete cascade on update cascade;
 alter table lives_in add constraint pk_composite primary key (playerId,addressId);
+
+-- create plays_in table
+create table if not exists plays_in(teamId integer, addressId integer);
+insert into plays_in (teamId, addressId) select t.id as teamId,a.id as addressId from teams t inner join addresses a on SIMILARITY(t.address,a.street) > 0.4 where a.id > '124525';
+
+alter table plays_in add constraint fk_primkey_teams foreign key (teamId) references teams(id) on delete cascade on update cascade;
+alter table plays_in add constraint fk_primkey_addresses foreign key (addressId) references addresses(id) on delete cascade on update cascade;
+alter table plays_in add constraint pk_composite_pi primary key (teamId,addressId);

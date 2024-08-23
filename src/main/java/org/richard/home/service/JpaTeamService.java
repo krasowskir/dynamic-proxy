@@ -8,8 +8,8 @@ import org.richard.home.domain.League;
 import org.richard.home.domain.Team;
 import org.richard.home.infrastructure.exception.LeagueDoesNotExistException;
 import org.richard.home.repository.TeamRepository;
-import org.richard.home.web.dto.TeamDto;
-import org.richard.home.web.mapper.TeamMapper;
+import org.richard.home.service.dto.TeamDto;
+import org.richard.home.service.mapper.TeamMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +40,9 @@ public class JpaTeamService implements TeamService {
         if (isNotNullOrEmpty(toTeamDTO.getLogo())) foundTeam.setLogo(toTeamDTO.getLogo());
         if (isNotNullOrEmpty(toTeamDTO.getName())) foundTeam.setName(toTeamDTO.getName());
         if (isNotNullOrEmpty(toTeamDTO.getEmail())) foundTeam.setEmail(toTeamDTO.getEmail());
-        if (isNotNullOrEmpty(toTeamDTO.getAddress().toString())) {
-            foundTeam.setAddress(toTeamDTO.getAddress().toString());
-        }
+//        if (isNotNullOrEmpty(toTeamDTO.getAddress().toString())) {
+//            foundTeam.setAddress(toTeamDTO.getAddress().toString());
+//        }
     }
 
     public static boolean isNotNullOrEmpty(String value) {

@@ -11,6 +11,8 @@ Vortrag
     - wann werden sie dahin aufgenommen
     - was ist der Sinn davon
 - hibernate method validator
+- remote debugging
+- embedded server
 - JMX monitoring
 
 Probleme: (Mapping, Validierung, Url Kodierung)
@@ -34,7 +36,8 @@ Probleme: (Mapping, Validierung, Url Kodierung)
 - wie injeziert man Konfigurationen [Konfiguration]
     - bzw. wie integriert sich spring in die servlet Spezifikation
     - man kann keine Abhängigkeiten in servlets injezieren!!!
-
+- wie erstellt man nur eine Instanz der EntityManagerFactory, welche man auch über eine Methode als Referenz zurückbekommt?
+    - nutze SINGLETON pattern 
 Probleme Hibernate:
 =========
 

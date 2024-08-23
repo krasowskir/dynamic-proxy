@@ -139,6 +139,20 @@ Server: Jetty(11.0.20)
 player: 177321 deleted successfully!
 ```
 
+update team of the player
+```
+curl -i -XPUT "http://localhost:8080/api/players/3608/contract" -H "Content-Type: application/json" -d '{"playerId": "abcd", "teamId": "66"}'
+HTTP/1.1 200 OK
+Date: Sat, 17 Aug 2024 18:44:16 GMT
+Content-Type: application/json
+X-Powered-By: Jetty 11
+Content-Length: 791
+Server: Jetty(11.0.20)
+
+{"Player{id=3608, name='Ellyes Skhiri', alter=26, position='Midfielder', dateOfBirth=1995-05-10, countryOfBirth=FRANCE, currentTeam=Team{id=66, name='Manchester United FC', budget=0, logo='null', tla='MUN', address='Sir Matt Busby Way Manchester M16 0RA', phone='+44 (0161) 8688000', email='enquiries@manutd.co.uk', venue='Old Trafford', website='http://www.manutd.com', owner='1878', wyId=0, league=League{id=2021, code='PL', name=Premier League}, squad=null}}":{"id":66,"name":"Manchester United FC","budget":0,"logo":null,"tla":"MUN","address":"Sir Matt Busby Way Manchester M16 0RA","phone":"+44 (0161) 8688000","email":"enquiries@manutd.co.uk","venue":"Old Trafford","website":"http://www.manutd.com","wyId":0,"league":{"id":2021,"code":"PL","name":"Premier League"},"founded":"1878"}}
+
+```
+
 ## Leagues
 create a league
 ```

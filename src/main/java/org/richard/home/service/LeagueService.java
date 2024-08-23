@@ -1,7 +1,7 @@
 package org.richard.home.service;
 
 import org.richard.home.domain.League;
-import org.richard.home.web.dto.LeagueDTO;
+import org.richard.home.service.dto.LeagueDTO;
 
 public interface LeagueService {
 

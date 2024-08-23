@@ -8,8 +8,8 @@ import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
 import org.richard.home.repository.*;
 import org.richard.home.service.*;
-import org.richard.home.web.mapper.PlayerMapper;
-import org.richard.home.web.mapper.TeamMapper;
+import org.richard.home.service.mapper.PlayerMapper;
+import org.richard.home.service.mapper.TeamMapper;
 
 public class StaticApplicationConfiguration {
 
@@ -35,7 +35,7 @@ public class StaticApplicationConfiguration {
     public static PlayerMapper PLAYER_MAPPER_INSTANCE = new PlayerMapper();
 
     public static LeagueRepository LEAGUE_REPOSITORY = new JpaLeagueRepository(ENTITY_MANAGER_FACTORY);
-    public static LeagueService LEAGUE_SERVICE = new JpaLeagueService(LEAGUE_REPOSITORY);
+    public static LeagueService LEAGUE_SERVICE = new JpaLeagueService(ENTITY_MANAGER_FACTORY, LEAGUE_REPOSITORY);
 
     private static ObjectMapper createObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();

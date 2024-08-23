@@ -1,4 +1,4 @@
-package org.richard.home.web;
+package org.richard.home.web.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;

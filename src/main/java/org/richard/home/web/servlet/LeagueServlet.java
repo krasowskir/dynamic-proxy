@@ -1,4 +1,4 @@
-package org.richard.home.web;
+package org.richard.home.web.servlet;
 
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.richard.home.config.StaticApplicationConfiguration;
 import org.richard.home.domain.League;
 import org.richard.home.service.LeagueService;
-import org.richard.home.web.dto.LeagueDTO;
+import org.richard.home.service.dto.LeagueDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

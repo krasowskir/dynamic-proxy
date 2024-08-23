@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.richard.home.web.dto.Country;
+import org.richard.home.service.dto.Country;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

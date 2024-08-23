@@ -1,5 +1,4 @@
-package org.richard.home.infrastructure;
-
+package org.richard.home.service.dto.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
