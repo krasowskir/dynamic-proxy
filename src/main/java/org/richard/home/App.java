@@ -10,6 +10,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.ServletsConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.richard.home.config.DatabaseConfiguration;
 import org.richard.home.config.StaticApplicationConfiguration;
 import org.richard.home.domain.Address;
 import org.richard.home.domain.Country;
@@ -67,6 +68,7 @@ public class App {
             // Spring web application context
             AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
             applicationContext.register(StaticApplicationConfiguration.class);
+//            var applicationConfiguration = new StaticApplicationConfiguration();
             applicationContext.setServletContext(servletContext.getServletContext());
             applicationContext.refresh();
 

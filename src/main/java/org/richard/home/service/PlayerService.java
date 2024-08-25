@@ -33,7 +33,7 @@ public interface PlayerService {
 
     boolean deletePlayerById(String playerId);
 
-    Map.Entry<Player, Team> updateTeamOfPlayer(String playerId, String newTeamId);
+    Player updateTeamOfPlayer(String playerId, String newTeamId);
 
     void deletePlayersContract(String playerId, String teamId);
 }

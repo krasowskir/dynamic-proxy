@@ -30,7 +30,6 @@ import static org.richard.home.web.WebConstants.HEADER_VALUE_APPLICATION_JSON;
 import static org.richard.home.web.WebConstants.HEADER_VALUE_FORM_URL_ENCODED;
 import static org.richard.home.web.WebUtils.*;
 
-//@WebServlet(urlPatterns = "/teeams")
 public class TeamServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(TeamServlet.class);

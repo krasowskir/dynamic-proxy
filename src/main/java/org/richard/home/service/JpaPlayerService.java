@@ -173,7 +173,7 @@ public class JpaPlayerService implements PlayerService {
     }
 
     @Override
-    public Map.Entry<Player, Team> updateTeamOfPlayer(String playerId, String newTeamId) {
+    public Player updateTeamOfPlayer(String playerId, String newTeamId) {
         EntityTransaction transaction = null;
         try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
             transaction = entityManager.getTransaction();
@@ -182,7 +182,7 @@ public class JpaPlayerService implements PlayerService {
             var foundTeam = Objects.requireNonNull(entityManager.find(Team.class, newTeamId), String.format("Team with id: %s not found!", newTeamId));
             foundPlayer.setCurrentTeam(foundTeam);
             transaction.commit();
-            return Map.entry(foundPlayer, foundTeam);
+            return foundPlayer;
         } catch (NullPointerException e) {
             log.error("error while updating player!");
             log.warn(e.getMessage());

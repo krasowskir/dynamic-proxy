@@ -149,6 +149,8 @@ public class PlayerServlet extends HttpServlet {
             if (matcher.matches()) {
                 var teamId = matcher.group(2);
                 request.getRequestDispatcher("/contracts" + "/" + teamId).forward(request, response);
+            } else {
+                request.getRequestDispatcher("/contracts").forward(request, response);
             }
         }
     }

@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.RollbackException;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.richard.home.config.StaticApplicationConfiguration;
 import org.richard.home.domain.Player;
-import org.richard.home.domain.Team;
 import org.richard.home.infrastructure.exception.InternalServerError;
 import org.richard.home.service.PlayerService;
 import org.richard.home.service.TeamService;
@@ -19,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -28,7 +25,6 @@ import static org.richard.home.web.WebUtils.handleResponse;
 
 public class PlayerUnderContractServlet extends HttpServlet {
 
-
     private static final Logger log = LoggerFactory.getLogger(PlayerUnderContractServlet.class);
     private PlayerService playerService;
 
@@ -36,19 +32,20 @@ public class PlayerUnderContractServlet extends HttpServlet {
     private ObjectMapper objectMapper;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         this.objectMapper = StaticApplicationConfiguration.OBJECT_MAPPER;
         objectMapper.registerModule(new JavaTimeModule());
         this.playerService = StaticApplicationConfiguration.PLAYER_SERVICE_INSTANCE;
         this.teamService = StaticApplicationConfiguration.TEAM_SERVICE_INSTANCE;
     }
 
-    // /api/contract
+    // /api/players/{id}/contracts
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String playerId = null;
         try {
             playerId = String.valueOf(Objects.requireNonNull(req.getServletContext().getAttribute("playerId")));
+            req.getServletContext().setAttribute("playerId", null);
             Optional.ofNullable(teamService.getCurrentTeamOfPlayer(playerId))
                     .ifPresent(elem -> {
                         try {
@@ -60,7 +57,7 @@ public class PlayerUnderContractServlet extends HttpServlet {
                     });
         } catch (NullPointerException e) {
             log.warn("playerId was null or contained only whitespaces!");
-            handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
+            handleResponse(resp, SC_BAD_REQUEST, "playerId was null or contained only whitespaces");
         } catch (NoResultException e) {
             log.warn("player with playerId: {} could not be matched with any team!", playerId);
             handleResponse(resp, SC_NOT_FOUND, e.getMessage());
@@ -75,17 +72,18 @@ public class PlayerUnderContractServlet extends HttpServlet {
         return super.getLastModified(req);
     }
 
+    //ToDo: clear servletContext after processing the request!
 
-    //api/players/1234
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String playerId = null;
         try {
             playerId = String.valueOf(Objects.requireNonNull(req.getServletContext().getAttribute("playerId")));
+            req.getServletContext().setAttribute("playerId", null);
             var playersNewTeam = objectMapper.readValue(req.getInputStream(), PlayersTeamDTO.class);
 
-            Map.Entry<Player, Team> playerWithTeam = playerService.updateTeamOfPlayer(playerId, playersNewTeam.getTeamId());
-            handleResponse(resp, SC_OK, objectMapper.writeValueAsString(playerWithTeam));
+            Player playerWithNewTeam = playerService.updateTeamOfPlayer(playerId, playersNewTeam.getTeamId());
+            handleResponse(resp, SC_OK, objectMapper.writeValueAsString(playerWithNewTeam));
         } catch (NullPointerException e) {
             log.warn("playerId was null!");
             handleResponse(resp, SC_BAD_REQUEST, e.getMessage());
@@ -101,6 +99,7 @@ public class PlayerUnderContractServlet extends HttpServlet {
         try {
             playerId = String.valueOf(Objects.requireNonNull(req.getServletContext().getAttribute("playerId")));
             var teamId = req.getPathInfo().replaceAll("/", "").trim();
+            req.getServletContext().setAttribute("playerId", null);
             playerService.deletePlayersContract(playerId, teamId);
             handleResponse(resp, SC_OK, "Deletion of players contract was successful!");
         } catch (NullPointerException e) {

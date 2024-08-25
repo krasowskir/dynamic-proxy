@@ -9,7 +9,8 @@ mvn clean verify -Dgroups=PostPlayers
 run app:
 
 ```
-export MAVEN_OPTS="--enable-preview -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+
+
 mvn exec:java -Dexec.mainClass=org.richard.home.App
 mvn exec:exec -Dexec.executable=java -Dexec.args="-cp %classpath org.richard.home.App"
 java --enable-preview -jar target/dynamic-proxy-1.0-jar-with-dependencies.jar
@@ -166,6 +167,47 @@ Server: Jetty(11.0.20)
 
 ```
 
+find team / contract of a player
+
+```
+curl -i -XGET "http://localhost:8080/api/players/44/contracts"
+
+HTTP/1.1 200 OK
+Date: Sun, 25 Aug 2024 06:23:12 GMT
+Content-Type: application/json
+X-Powered-By: Jetty 11
+Content-Length: 390
+Server: Jetty(11.0.20)
+
+{"id":66,"name":"Manchester United FC","budget":0,"logo":null,"tla":"MUN","address":{"id":124760,"city":" Manchester","street":" Sir Matt Busby Way","plz":" M16 0RA","country":"ENGLAND"},"phone":"+44 (0161) 8688000","email":"enquiries@manutd.co.uk","venue":"Old Trafford","website":"http://www.manutd.com","wyId":0,"league":{"id":2021,"code":"PL","name":"Premier League"},"founded":"1878"}
+```
+
+update team/contract of player
+
+```
+curl -i -XPUT  "http://localhost:8080/api/players/298162/contracts" -H "Content-Type: application/json" -d '{"playerId": 298162, "teamId": 66}'
+HTTP/1.1 200 OK
+Date: Sun, 25 Aug 2024 06:41:37 GMT
+Content-Type: application/json
+X-Powered-By: Jetty 11
+Content-Length: 559
+Server: Jetty(11.0.20)
+
+{"id":298162,"name":"Richard Johanson","alter":33,"position":"STRIKER","dateOfBirth":[1991,6,20],"countryOfBirth":"GERMANY","currentTeam":{"id":66,"name":"Manchester United FC","budget":0,"logo":null,"tla":"MUN","address":{"id":124760,"city":" Manchester","street":" Sir Matt Busby Way","plz":" M16 0RA","country":"ENGLAND"},"phone":"+44 (0161) 8688000","email":"enquiries@manutd.co.uk","venue":"Old Trafford","website":"http://www.manutd.com","wyId":0,"league":{"id":2021,"code":"PL","name":"Premier League"},"hibernateLazyInitializer":{},"founded":"1878"}}
+```
+
+delete current team/contract of player
+```
+curl -i -XDELETE "http://localhost:8080/api/players/298162/contracts/66"
+HTTP/1.1 200 OK
+Date: Sun, 25 Aug 2024 06:43:19 GMT
+Content-Type: application/json
+X-Powered-By: Jetty 11
+Content-Length: 45
+Server: Jetty(11.0.20)
+
+Deletion of players contract was successful!
+```
 ## Leagues
 
 create a league

@@ -10,9 +10,16 @@ import org.richard.home.repository.*;
 import org.richard.home.service.*;
 import org.richard.home.service.mapper.PlayerMapper;
 import org.richard.home.service.mapper.TeamMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StaticApplicationConfiguration {
 
+    private static final Logger log = LoggerFactory.getLogger(StaticApplicationConfiguration.class);
+
+    static {
+        databaseConfiguration = new DatabaseConfiguration();
+    }
     public static ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
     public static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     public static ConstraintValidatorFactory CONSTRAINT_VALIDATOR_FACTORY = VALIDATOR_FACTORY.getConstraintValidatorFactory();
@@ -28,8 +35,9 @@ public class StaticApplicationConfiguration {
     public static LeagueRepository LEAGUE_REPOSITORY = new JpaLeagueRepository(ENTITY_MANAGER_FACTORY);
     public static LeagueService LEAGUE_SERVICE = new JpaLeagueService(ENTITY_MANAGER_FACTORY, LEAGUE_REPOSITORY);
 
-    static {
-        databaseConfiguration = new DatabaseConfiguration();
+
+    public StaticApplicationConfiguration() {
+        log.info("static application configuration instantiated! DatabaseConfiguration: {}", databaseConfiguration);
     }
 
     private static ObjectMapper createObjectMapper() {
