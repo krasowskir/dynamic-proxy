@@ -8,9 +8,9 @@ import jakarta.persistence.EntityTransaction;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.ServletsConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.richard.home.config.DatabaseConfiguration;
 import org.richard.home.config.StaticApplicationConfiguration;
 import org.richard.home.domain.Address;
 import org.richard.home.domain.Country;
@@ -78,11 +78,14 @@ public class App {
 
             // ToDo: Finde heraus, wie man hier PlayerService injezieren kann!!!
             servletContext.addServlet(PlayerServlet.class, "/players/*");
-            servletContext.addServlet(PlayerUnderContractServlet.class, "/contracts/*");
+//            servletContext.addServlet(PlayerUnderContractServlet.class, "/contracts/*");
             servletContext.addServlet(TeamServlet.class, "/teams/*");
             servletContext.addServlet(LeagueServlet.class, "/leagues/*");
+//            servletContext.addServlet(LeagueListServlet.class, "/leagues-list/*");
+            servletContext.addServlet(new ServletHolder("LeagueListServlet", LeagueListServlet.class),"/leagues-list/*");
             servletContext.addServlet(HealthServlet.class, "/health/*");
-            servletContext.addServlet(PlayerUnderContractServlet.class, null);
+            servletContext.addServlet(new ServletHolder("PlayerUnderContractServlet",PlayerUnderContractServlet.class), "/contracts/*");
+
             servletContext.setResourceBase("target/dynamic-proxy-1.0.jar");
             servletContext.setContextPath("/api");
 

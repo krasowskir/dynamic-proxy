@@ -8,7 +8,7 @@ import org.richard.home.domain.League;
 import org.richard.home.domain.Team;
 import org.richard.home.infrastructure.exception.LeagueDoesNotExistException;
 import org.richard.home.repository.TeamRepository;
-import org.richard.home.service.dto.TeamDto;
+import org.richard.home.service.dto.TeamDTO;
 import org.richard.home.service.mapper.TeamMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class JpaTeamService implements TeamService {
         this.teamRepository = teamRepository;
     }
 
-    private static void updateTeamAttributes(TeamDto toTeamDTO, Team foundTeam, League foundLeague) {
+    private static void updateTeamAttributes(TeamDTO toTeamDTO, Team foundTeam, League foundLeague) {
         foundTeam.setLeague(foundLeague);
         if (toTeamDTO.getWyId() != 0) foundTeam.setWyId(toTeamDTO.getWyId());
         if (isNotNullOrEmpty(toTeamDTO.getWebsite())) foundTeam.setWebsite(toTeamDTO.getWebsite());
@@ -49,10 +49,10 @@ public class JpaTeamService implements TeamService {
     }
 
     @Override
-    public Team createTeam(TeamDto fromTeam) throws LeagueDoesNotExistException {
+    public Team createTeam(TeamDTO fromTeam) throws LeagueDoesNotExistException {
         EntityTransaction transaction = null;
         Team team = teamMapper.mapFromDomain(fromTeam);
-        try (var entityManager = entityManagerFactory.createEntityManager();) {
+        try (var entityManager = entityManagerFactory.createEntityManager()) {
             transaction = entityManager.getTransaction();
             transaction.begin();
             var foundLeague = Optional.ofNullable(
@@ -97,7 +97,7 @@ public class JpaTeamService implements TeamService {
 
     // ToDo: rollback der Transaktion fehlt!
     @Override
-    public Team updateTeam(String teamId, TeamDto toTeamDTO) throws LeagueDoesNotExistException {
+    public Team updateTeam(String teamId, TeamDTO toTeamDTO) throws LeagueDoesNotExistException {
         EntityTransaction transaction = null;
         try (var entityManager = entityManagerFactory.createEntityManager()) {
             transaction = entityManager.getTransaction();

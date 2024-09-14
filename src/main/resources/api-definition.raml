@@ -1,0 +1,82 @@
+#%RAML 1.0
+---
+title: player DB API
+baseUri: http://localhost:8080/api
+protocols: [ HTTP ]
+version: v1
+/players:
+  displayName: a collection of players
+  description: handle players API
+  /{playerId}:
+    get:
+      description: Fetches the players. Use of path parameters is exclusive to use of request parameters
+      headers:
+        Content-Type:
+          application/json:
+            description: for url path parameters
+          application/x-www-form-urlencoded:
+            description: for queryParameters
+      uriParameters:
+        playerId:
+          type: integer
+          displayName: the id of the player
+          example: 33
+          required: true
+      queryParameters:
+        name:
+          type: string
+          displayName: the name of the player url encoded.
+          example: Richard%20Johanson
+          required: true
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                  "id":177321,
+                  "name":"Richard Johanson",
+                  "alter":33,
+                  "position":"STRIKER",
+                  "dateOfBirth":[1991,6,20],
+                  "countryOfBirth":"GERMANY"
+                }
+
+  post:
+    description: creates a player
+    headers:
+      Content-Type:
+        description: "application/json"
+        example: "Content-Type: application/json"
+    body:
+      description: json body of a player
+      example: |
+        {
+          "name": "Richard Johanson",
+          "age": 33,
+          "position": "STRIKER",
+          "dateOfBirth": "1991-06-20",
+          "countryOfBirth": "GERMANY"
+        }
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "id":177320,
+                "name":"Richard Johanson",
+                "alter":33,
+                "position":"STRIKER",
+                "dateOfBirth":[1991,6,20],
+                "countryOfBirth":"GERMANY"
+              }
+    put:
+
+    delete:
+/leagues:
+
+/teams:
+
+
+

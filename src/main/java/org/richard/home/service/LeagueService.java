@@ -3,6 +3,8 @@ package org.richard.home.service;
 import org.richard.home.domain.League;
 import org.richard.home.service.dto.LeagueDTO;
 
+import java.util.List;
+
 public interface LeagueService {
 
     League createLeague(LeagueDTO leagueDTO);
@@ -16,4 +18,6 @@ public interface LeagueService {
     boolean deleteLeague(String id);
 
     League updateLeague(String id, LeagueDTO toBe);
+
+    List<League> listLeagues();
 }

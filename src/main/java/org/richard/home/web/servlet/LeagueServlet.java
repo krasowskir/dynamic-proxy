@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.PersistenceException;
 import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -81,6 +82,11 @@ public class LeagueServlet extends HttpServlet {
         }
     }
 
+    private void forwardToContractServlet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getRequestURI().contains("/list")) {
+            request.getServletContext().getNamedDispatcher("LeagueListServlet").forward(request, response);
+        }
+    }
     @Override
     public void init(ServletConfig config) {
         log.info("init method without args was called...");
@@ -88,6 +94,12 @@ public class LeagueServlet extends HttpServlet {
         this.leagueService = StaticApplicationConfiguration.LEAGUE_SERVICE;
         this.objectMapper = OBJECT_MAPPER;
         this.objectMapper.registerModule(new JavaTimeModule());
+    }
+
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        forwardToContractServlet(req, resp);
     }
 
     @Override

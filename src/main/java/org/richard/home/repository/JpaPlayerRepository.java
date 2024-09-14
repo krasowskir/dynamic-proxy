@@ -21,6 +21,7 @@ public class JpaPlayerRepository implements PlayerRepository {
         this.entityManagerFactory = entityManagerFactory;
     }
 
+    // ToDo: getPlayerByName funktioniert noch nicht!!!
     @Override
     public Player getPlayer(EntityManager localEntityManager, String name) {
         CriteriaBuilder criteriaBuilder = localEntityManager.getCriteriaBuilder();

@@ -60,7 +60,7 @@ public class DatabaseConfiguration {
                 DatabaseConfiguration.entityManagerFactory = constructEntityManagerFactory();
             }
         } catch (InternalServerError e) {
-            log.error("could not create entity manager factory!", e.getMessage());
+            log.error("could not create entity manager factory! {}", e.getMessage());
             throw e;
         }
     }

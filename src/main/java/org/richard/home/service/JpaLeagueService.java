@@ -7,6 +7,7 @@ import org.richard.home.service.dto.LeagueDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Objects;
 
 import static org.richard.home.service.JpaTeamService.isNotNullOrEmpty;
@@ -58,6 +59,10 @@ public class JpaLeagueService implements LeagueService {
         return leagueRepository.getLeagueByCode(code);
     }
 
+    @Override
+    public List<League> listLeagues() {
+        return leagueRepository.getAllLeagues();
+    }
 
     @Override
     public boolean deleteLeague(String id) {

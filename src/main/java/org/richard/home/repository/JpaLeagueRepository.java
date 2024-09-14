@@ -12,6 +12,8 @@ import org.richard.home.domain.League_;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class JpaLeagueRepository implements LeagueRepository {
 
     private static Logger log = LoggerFactory.getLogger(JpaLeagueRepository.class);
@@ -48,6 +50,20 @@ public class JpaLeagueRepository implements LeagueRepository {
             log.error("error while querying by leagueName: {}", leagueName);
         }
         return null;
+    }
+
+    @Override
+    public List<League> getAllLeagues() {
+        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<League> query = criteriaBuilder.createQuery(League.class);
+            query.from(League.class);
+
+            return entityManager.createQuery(query).getResultList();
+        } catch (IllegalArgumentException | NoResultException | NonUniqueResultException e) {
+            log.error("error while querying all leagues");
+            throw e;
+        }
     }
 
     @Override

@@ -51,7 +51,7 @@ public class PlayerServlet extends HttpServlet {
         this.objectMapper.registerModule(new JavaTimeModule()).disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     }
 
-    // ToDo: getPlayer by age is missing!
+    // ToDo: getPlayer by age is missing! und getPlayer by name funzt nicht!
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Player foundPlayer = null;
@@ -148,7 +148,8 @@ public class PlayerServlet extends HttpServlet {
             var matcher = PLAYER_CONTRACTS_PATTERN.matcher(request.getRequestURI());
             if (matcher.matches()) {
                 var teamId = matcher.group(2);
-                request.getRequestDispatcher("/contracts" + "/" + teamId).forward(request, response);
+//                request.getRequestDispatcher("/contracts" + "/" + teamId).forward(request, response);
+                request.getServletContext().getNamedDispatcher("PlayerUnderContractServlet").forward(request, response);
             } else {
                 request.getRequestDispatcher("/contracts").forward(request, response);
             }

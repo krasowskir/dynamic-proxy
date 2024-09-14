@@ -60,7 +60,7 @@ public class PlayerUnderContractServlet extends HttpServlet {
             handleResponse(resp, SC_BAD_REQUEST, "playerId was null or contained only whitespaces");
         } catch (NoResultException e) {
             log.warn("player with playerId: {} could not be matched with any team!", playerId);
-            handleResponse(resp, SC_NOT_FOUND, e.getMessage());
+            handleResponse(resp, SC_NOT_FOUND, String.format("player with playerId: %s could not be matched with any team!", playerId));
         } catch (InternalServerError e) {
             log.warn("super bad ");
             handleResponse(resp, SC_INTERNAL_SERVER_ERROR, e.getMessage());

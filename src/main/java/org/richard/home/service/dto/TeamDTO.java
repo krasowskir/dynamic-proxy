@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.richard.home.service.dto.validator.ValidAddress;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TeamDto {
+public class TeamDTO {
 
     @NotBlank(message = "name cannot be null or empty")
     private String name;
@@ -30,10 +30,10 @@ public class TeamDto {
     @NotBlank(message = "leagueId cannot be null or empty")
     private String leagueId;
 
-    public TeamDto() {
+    public TeamDTO() {
     }
 
-    public TeamDto(String name, int budget, String logoUrl, String owner, String tla, AddressDTO address, String phone, String website, String email, String venue, int wyId, String leagueId) {
+    public TeamDTO(String name, int budget, String logoUrl, String owner, String tla, AddressDTO address, String phone, String website, String email, String venue, int wyId, String leagueId) {
         this.name = name;
         this.budget = budget;
         this.logo = logoUrl;

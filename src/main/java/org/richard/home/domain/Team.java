@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Objects;
@@ -23,7 +24,7 @@ public class Team {
     private String logo;
     private String tla;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinTable(name = "plays_in", joinColumns = @JoinColumn(name = "teamId"), inverseJoinColumns = @JoinColumn(name = "addressId"))
     private Address address;
 

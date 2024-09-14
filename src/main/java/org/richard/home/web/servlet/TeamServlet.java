@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.richard.home.domain.Team;
 import org.richard.home.infrastructure.exception.LeagueDoesNotExistException;
 import org.richard.home.service.TeamService;
-import org.richard.home.service.dto.TeamDto;
+import org.richard.home.service.dto.TeamDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,10 +78,11 @@ public class TeamServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         log.info("doPost method was called...");
         try {
-            TeamDto teamDto = mapTeamDTO(req);
+            TeamDTO teamDto = mapTeamDTO(req);
             validateAndHandleInvalid(teamDto);
             var createdTeam = this.teamService.createTeam(teamDto);
-            handleResponse(resp, SC_CREATED, format("team successfully created. TeamId: %d", createdTeam.getId()));
+            log.info("team successfully created. TeamId: {}", createdTeam.getId());
+            handleResponse(resp, SC_CREATED, objectMapper.writeValueAsString(createdTeam));
         } catch (LeagueDoesNotExistException e) {
             handleResponse(resp, SC_BAD_REQUEST, format("league specified does not exist! %s", e.getMessage()));
         } catch (IllegalArgumentException | JsonProcessingException e) {
@@ -97,7 +98,7 @@ public class TeamServlet extends HttpServlet {
             handleBadContentType(req, HEADER_VALUE_APPLICATION_JSON);
             String teamId = Objects.requireNonNull(
                     extractTeamId(req, TEAMS_PATH + "/id/"), "teamId was null");
-            TeamDto teamDto = objectMapper.treeToValue(objectMapper.readTree(req.getInputStream()), TeamDto.class);
+            TeamDTO teamDto = objectMapper.treeToValue(objectMapper.readTree(req.getInputStream()), TeamDTO.class);
             validateAndHandleInvalid(teamDto);
             var updatedTeam = teamService.updateTeam(teamId, teamDto);
             handleResponse(resp, SC_OK, objectMapper.writeValueAsString(updatedTeam));
@@ -130,7 +131,7 @@ public class TeamServlet extends HttpServlet {
     }
 
 
-    private TeamDto mapTeamDTO(HttpServletRequest req) throws IOException {
+    private TeamDTO mapTeamDTO(HttpServletRequest req) throws IOException {
         switch (stripCharset(req.getContentType())) {
             case HEADER_VALUE_FORM_URL_ENCODED -> {
                 return null;
@@ -138,7 +139,7 @@ public class TeamServlet extends HttpServlet {
             case HEADER_VALUE_APPLICATION_JSON -> {
                 try (var input = req.getInputStream()) {
                     JsonNode jsonTree = objectMapper.readTree(input);
-                    return objectMapper.treeToValue(jsonTree, TeamDto.class);
+                    return objectMapper.treeToValue(jsonTree, TeamDTO.class);
                 } catch (IllegalArgumentException | JsonProcessingException e) {
                     log.warn("could not read and parse team json!");
                     throw e;
