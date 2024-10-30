@@ -13,7 +13,7 @@
 - Buffering um Performance zu steigern ausprobieren
 - WAF ausprobieren
 - OpenIdConnect & oauth2 integration implementieren
-- Adresse als separate Entity herausarbeiten
+- logging und tracing implementieren
 
 ## Erledigt:
 
@@ -24,6 +24,7 @@
 - Redis & hibernate cache integration
 - wie stoppt man maven-exec prozesse?
 - wie startet man die Application in einem anderen thread, separat vom maven lifecycle?
+- Adresse als separate Entity herausarbeiten
 
 ## Probleme:
 
@@ -32,6 +33,7 @@
 - wie startet man die Application in einem anderen thread, separat vom maven lifecycle?
     - exec-maven-plugin führt alles nur in einer VM aus. -> forkMode oder jetty plugin
 - wie schaltet man cache für integrationsTests aus?
+- 
 
 ## Features
 
@@ -41,3 +43,6 @@
 - Aufsteigen einer Mannschaft
 - Trainererstellung, Trainerwechsel
 - Meisterschaft Spiel: Mannschaft - Mannschaft 
+- logo eines Teams
+  - speichern mittels document-management-service (POST fileName=@/...)
+  - holen des logos via fetch

@@ -1,13 +1,11 @@
 package org.richard.home.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.Tuple;
+import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
 import org.richard.home.domain.Player;
 import org.richard.home.domain.Player_;
 import org.richard.home.domain.Team;
+import org.richard.home.domain.Team_;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +46,21 @@ public class JpaTeamRepository implements TeamRepository {
         } catch (NoResultException e) {
             log.warn("no team found for player: {}", playerId);
             throw e;
+        }
+    }
+
+    @Override
+    public Optional<String> getLogoOfTeam(String teamId) {
+        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery query = criteriaBuilder.createQuery(String.class);
+
+            Root<Team> root = query.from(Team.class);
+            query.select(root.get(Team_.logo)).where(criteriaBuilder.equal(root.get(Team_.ID), teamId));
+            return Optional.ofNullable(String.valueOf(entityManager.createQuery(query).getSingleResult()));
+        } catch (IllegalStateException | PersistenceException e) {
+            log.error("Error during getLogoOfTeam query. Error message: {}", e.getMessage());
+            return Optional.empty();
         }
     }
 }

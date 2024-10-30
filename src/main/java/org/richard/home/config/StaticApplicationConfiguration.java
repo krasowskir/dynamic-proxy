@@ -20,6 +20,7 @@ public class StaticApplicationConfiguration {
     static {
         databaseConfiguration = new DatabaseConfiguration();
     }
+
     public static ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
     public static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     public static ConstraintValidatorFactory CONSTRAINT_VALIDATOR_FACTORY = VALIDATOR_FACTORY.getConstraintValidatorFactory();
@@ -28,8 +29,8 @@ public class StaticApplicationConfiguration {
     private static DatabaseConfiguration databaseConfiguration;
     public static EntityManagerFactory ENTITY_MANAGER_FACTORY = databaseConfiguration.getEntityManagerFactory();
     public static TeamRepository TEAM_REPOSITORY = new JpaTeamRepository(ENTITY_MANAGER_FACTORY);
-
-    public static TeamService TEAM_SERVICE_INSTANCE = new JpaTeamService(ENTITY_MANAGER_FACTORY, TEAM_MAPPER_INSTANCE, TEAM_REPOSITORY);
+    public static DocumentService DOCUMENT_SERVICE = new RemoteFileServiceGateway();
+    public static final TeamService TEAM_SERVICE_INSTANCE = new JpaTeamService(ENTITY_MANAGER_FACTORY, TEAM_MAPPER_INSTANCE, TEAM_REPOSITORY, DOCUMENT_SERVICE);
     public static PlayerRepository PLAYER_REPOSITORY = new JpaPlayerRepository(ENTITY_MANAGER_FACTORY);
     public static PlayerService PLAYER_SERVICE_INSTANCE = new JpaPlayerService(ENTITY_MANAGER_FACTORY, PLAYER_REPOSITORY);
     public static LeagueRepository LEAGUE_REPOSITORY = new JpaLeagueRepository(ENTITY_MANAGER_FACTORY);

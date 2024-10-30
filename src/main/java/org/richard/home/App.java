@@ -57,7 +57,7 @@ public class App {
             server = new Server();
             MBeanContainer mBeanContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
             ServerConnector connector = new ServerConnector(server);
-            connector.setPort(8080);
+            connector.setPort(8081);
             server.addConnector(connector);
             server.addBean(mBeanContainer);
 
@@ -77,9 +77,14 @@ public class App {
             servletContext.addEventListener(new ContextLoaderListener(applicationContext));
 
             // ToDo: Finde heraus, wie man hier PlayerService injezieren kann!!!
+            var teamLogoServlet = new ServletHolder(TeamLogoServlet.class);
+            teamLogoServlet.setAsyncSupported(true);
+            teamLogoServlet.setName("teamLogoServlet");
+
             servletContext.addServlet(PlayerServlet.class, "/players/*");
 //            servletContext.addServlet(PlayerUnderContractServlet.class, "/contracts/*");
             servletContext.addServlet(TeamServlet.class, "/teams/*");
+            servletContext.addServlet(teamLogoServlet, "/logo");
             servletContext.addServlet(LeagueServlet.class, "/leagues/*");
 //            servletContext.addServlet(LeagueListServlet.class, "/leagues-list/*");
             servletContext.addServlet(new ServletHolder("LeagueListServlet", LeagueListServlet.class),"/leagues-list/*");

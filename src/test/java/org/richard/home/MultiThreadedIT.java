@@ -250,6 +250,8 @@ public class MultiThreadedIT {
 
     }
 
+    // ToDo: Scenario könnte mit GET Operation arbeiten um den Zustandsübergang zwischen POST und Get zu vertesten. Nutze
+    // lastModified header oder Etag header
     @Test
     void testPlayerContractUpdateScenario() throws InterruptedException {
 

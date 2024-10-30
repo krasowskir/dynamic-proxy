@@ -15,7 +15,10 @@ public interface TeamService {
 
     Team updateTeam(String teamId, TeamDTO toTeam) throws LeagueDoesNotExistException;
 
-    Team getCurrentTeamOfPlayer(String playerId);
+    boolean updateTeamLogo(String teamId, String logoObjectId) throws NoResultException;
 
+    byte[] getTeamLogoAsync(String teamId) throws NoResultException;
+
+    Team getCurrentTeamOfPlayer(String playerId);
 
 }

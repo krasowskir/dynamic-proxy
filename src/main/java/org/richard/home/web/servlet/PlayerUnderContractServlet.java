@@ -99,7 +99,7 @@ public class PlayerUnderContractServlet extends HttpServlet {
         try {
             playerId = String.valueOf(Objects.requireNonNull(req.getServletContext().getAttribute("playerId")));
             var teamId = req.getPathInfo().replaceAll("/", "").trim();
-            req.getServletContext().setAttribute("playerId", null);
+            req.getServletContext().removeAttribute("playerId");
             playerService.deletePlayersContract(playerId, teamId);
             handleResponse(resp, SC_OK, "Deletion of players contract was successful!");
         } catch (NullPointerException e) {

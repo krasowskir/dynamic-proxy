@@ -1,9 +1,7 @@
 package org.richard.home.service;
 
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.RollbackException;
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.*;
 import org.richard.home.domain.League;
 import org.richard.home.domain.Team;
 import org.richard.home.infrastructure.exception.LeagueDoesNotExistException;
@@ -13,6 +11,7 @@ import org.richard.home.service.mapper.TeamMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -23,10 +22,13 @@ public class JpaTeamService implements TeamService {
     private TeamRepository teamRepository;
     private TeamMapper teamMapper;
 
-    public JpaTeamService(EntityManagerFactory entityManagerFactory, TeamMapper teamMapper, TeamRepository teamRepository) {
+    private DocumentService remoteFileService;
+
+    public JpaTeamService(EntityManagerFactory entityManagerFactory, TeamMapper teamMapper, TeamRepository teamRepository, DocumentService documentService) {
         this.entityManagerFactory = entityManagerFactory;
         this.teamMapper = teamMapper;
         this.teamRepository = teamRepository;
+        this.remoteFileService = documentService;
     }
 
     private static void updateTeamAttributes(TeamDTO toTeamDTO, Team foundTeam, League foundLeague) {
@@ -134,6 +136,48 @@ public class JpaTeamService implements TeamService {
                 .orElseThrow(() -> new NullPointerException("playerId was null or empty!"));
 
         return teamRepository.getTeamOfPlayer(validPlayerId);
+    }
+
+    @Override
+    public boolean updateTeamLogo(@Nonnull String teamId, @Nonnull String logoObjectId) throws NoResultException {
+        Objects.requireNonNull(teamId, "teamId was null!");
+        Objects.requireNonNull(logoObjectId, "logoObjectId was null!");
+        EntityTransaction transaction = null;
+        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+            var team = entityManager.find(Team.class, teamId);
+            team.setLogo(logoObjectId);
+            transaction.commit();
+            return true;
+        } catch (RollbackException | IllegalStateException e) {
+            log.error("something went wrong. WIll rollback the transaction...");
+            transaction.rollback();
+            return false;
+        } catch (NullPointerException e) {
+            log.error("Not allowed to be null! {}", e.getMessage());
+            return false;
+        } catch (NoResultException e) {
+            log.error("Could not find the team with id: {}. Will rollback...", teamId);
+            transaction.rollback();
+            throw e;
+        }
+    }
+
+    @Override
+    public byte[] getTeamLogoAsync(@Nonnull String teamId) throws NoResultException {
+        try {
+            var validTeamId = Optional.of(Objects.requireNonNull(teamId))
+                    .filter(elem -> !elem.isBlank())
+                    .orElseThrow(() -> new IllegalArgumentException("teamId was empty string!"));
+            var logoObjectId = teamRepository.getLogoOfTeam(validTeamId)
+                    .orElseThrow(() -> new NoResultException("no LogoObjectId"));
+            log.info("the logo file was: {}", logoObjectId);
+            return remoteFileService.obtainFileByObjectId(logoObjectId);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            log.error("teamId was null or empty or contained only whitespaces!");
+            throw new NoResultException(e.getMessage());
+        }
     }
 
     private void handleNotExistingLeague(String leagueId) {

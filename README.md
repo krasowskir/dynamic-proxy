@@ -60,6 +60,11 @@ finding a team:
 curl -i -X GET "http://localhost:8080/api/teams?id=66"
 ```
 
+update team logo
+```
+curl -i -XPUT "http://localhost:8081/api/teams/686/logo" -H "Content-Type: application/octet-stream/" -d "profile=@/Users/rkrasowski/5.png" -H "Filename: 5.png"
+```
+
 ## Players
 
 create a single player
@@ -182,7 +187,7 @@ Server: Jetty(11.0.20)
 {"id":66,"name":"Manchester United FC","budget":0,"logo":null,"tla":"MUN","address":{"id":124760,"city":" Manchester","street":" Sir Matt Busby Way","plz":" M16 0RA","country":"ENGLAND"},"phone":"+44 (0161) 8688000","email":"enquiries@manutd.co.uk","venue":"Old Trafford","website":"http://www.manutd.com","wyId":0,"league":{"id":2021,"code":"PL","name":"Premier League"},"founded":"1878"}
 ```
 
-update team/contract of player
+update contract of player
 
 ```
 curl -i -XPUT  "http://localhost:8080/api/players/298162/contracts" -H "Content-Type: application/json" -d '{"playerId": 298162, "teamId": 66}'
@@ -196,7 +201,7 @@ Server: Jetty(11.0.20)
 {"id":298162,"name":"Richard Johanson","alter":33,"position":"STRIKER","dateOfBirth":[1991,6,20],"countryOfBirth":"GERMANY","currentTeam":{"id":66,"name":"Manchester United FC","budget":0,"logo":null,"tla":"MUN","address":{"id":124760,"city":" Manchester","street":" Sir Matt Busby Way","plz":" M16 0RA","country":"ENGLAND"},"phone":"+44 (0161) 8688000","email":"enquiries@manutd.co.uk","venue":"Old Trafford","website":"http://www.manutd.com","wyId":0,"league":{"id":2021,"code":"PL","name":"Premier League"},"hibernateLazyInitializer":{},"founded":"1878"}}
 ```
 
-delete current team/contract of player
+delete current contract of player
 ```
 curl -i -XDELETE "http://localhost:8080/api/players/298162/contracts/66"
 HTTP/1.1 200 OK
@@ -208,6 +213,7 @@ Server: Jetty(11.0.20)
 
 Deletion of players contract was successful!
 ```
+
 ## Leagues
 
 create a league

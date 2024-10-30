@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -52,6 +53,12 @@ public class TeamServlet extends HttpServlet {
         this.objectMapper.registerModule(new JavaTimeModule());
         this.teamService = TEAM_SERVICE_INSTANCE;
         log.info("init method was called...");
+    }
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        forwardToTeamLogo(req, resp);
+//        super.service(req, resp);
     }
 
     @Override
@@ -130,6 +137,18 @@ public class TeamServlet extends HttpServlet {
         }
     }
 
+
+    private void forwardToTeamLogo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getPathInfo() != null && request.getPathInfo().contains("/logo")) {
+            if (request.getMethod().equals("PUT") || request.getMethod().equals("GET")) {
+                Optional.of(request.getPathInfo().substring(1, request.getPathInfo().indexOf("/logo")))
+                        .stream()
+                        .forEach(teamId -> request.getServletContext().setAttribute("teamId", teamId));
+
+                request.getServletContext().getNamedDispatcher(TeamLogoServlet.SERVLET_NAME).forward(request, response);
+            }
+        }
+    }
 
     private TeamDTO mapTeamDTO(HttpServletRequest req) throws IOException {
         switch (stripCharset(req.getContentType())) {
